@@ -11,9 +11,27 @@ export function SiteFooter({ siteName }: { siteName: string }) {
               Building thoughtfully, leading intentionally.
             </p>
           </div>
-          <div className="flex gap-5 text-sm text-fg-muted">
-            <Link href="/cv" className="hover:text-accent">CV</Link>
-            <Link href="/contact" className="hover:text-accent">Contact</Link>
+          <div className="flex gap-3">
+            <Link
+              href="/cv"
+              className="group glass relative rounded-full px-4 py-2 text-sm font-medium text-fg transition-all duration-300 hover:-translate-y-0.5 hover:text-accent hover:shadow-lg hover:shadow-accent/20"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-accent/30 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-100"
+              />
+              CV
+            </Link>
+            <Link
+              href="/contact"
+              className="group glass relative rounded-full px-4 py-2 text-sm font-medium text-fg transition-all duration-300 hover:-translate-y-0.5 hover:text-accent hover:shadow-lg hover:shadow-accent/20"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -inset-2 -z-10 rounded-full bg-accent/30 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-100"
+              />
+              Contact
+            </Link>
           </div>
         </div>
         <p className="mt-8 text-xs text-fg-subtle">
