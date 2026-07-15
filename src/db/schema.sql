@@ -134,3 +134,12 @@ CREATE TABLE IF NOT EXISTS cv_leadership (
   description TEXT,
   order_index INTEGER NOT NULL DEFAULT 0
 );
+
+-- Social media links shown as icon buttons in the hero (fixed set of platforms, admin-managed)
+CREATE TABLE IF NOT EXISTS social_links (
+  id SERIAL PRIMARY KEY,
+  platform TEXT UNIQUE NOT NULL CHECK (platform IN ('linkedin', 'instagram', 'facebook', 'youtube')),
+  url TEXT NOT NULL DEFAULT '',
+  visible INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT now()::text
+);

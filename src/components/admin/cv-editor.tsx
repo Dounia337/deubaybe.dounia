@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Save, Plus, Trash2, Loader2 } from "lucide-react";
-import { Field, TextInput, TextArea } from "@/components/admin/form-fields";
+import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
+import { Field, TextInput, TextArea, Toggle } from "@/components/admin/form-fields";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button, Card } from "@/components/ui/primitives";
+import type { SocialPlatform } from "@/db/repo";
 
 type Profile = {
   full_name: string;
@@ -20,6 +22,15 @@ type Education = { id: number; institution: string; degree: string; field: strin
 type WorkExperience = { id: number; organization: string; role: string; start_date: string; end_date: string | null; description: string | null };
 type Skill = { id: number; category: string; name: string; level: number };
 type Leadership = { id: number; role: string; organization: string; start_date: string; end_date: string | null; description: string | null };
+type SocialLinkForm = { platform: SocialPlatform; url: string; visible: boolean };
+
+const SOCIAL_PLATFORM_META: Record<SocialPlatform, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  linkedin: { label: "LinkedIn", icon: FaLinkedin },
+  instagram: { label: "Instagram", icon: FaInstagram },
+  facebook: { label: "Facebook", icon: FaFacebook },
+  youtube: { label: "YouTube", icon: FaYoutube },
+};
+const SOCIAL_PLATFORM_ORDER: SocialPlatform[] = ["linkedin", "instagram", "facebook", "youtube"];
 
 export function CVEditor() {
   const [loading, setLoading] = useState(true);
@@ -56,11 +67,92 @@ export function CVEditor() {
   return (
     <div className="max-w-2xl space-y-10">
       <ProfileSection profile={profile} setProfile={setProfile} />
+      <SocialLinksSection />
       <EducationSection items={education} reload={load} />
       <ExperienceSection items={experience} reload={load} />
       <LeadershipSection items={leadership} reload={load} />
       <SkillsSection items={skills} reload={load} />
     </div>
+  );
+}
+
+function SocialLinksSection() {
+  const [links, setLinks] = useState<SocialLinkForm[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/social-links")
+      .then((r) => r.json())
+      .then((json) =>
+        setLinks(
+          (json.links as { platform: SocialPlatform; url: string; visible: number }[]).map((l) => ({
+            platform: l.platform,
+            url: l.url,
+            visible: !!l.visible,
+          }))
+        )
+      );
+  }, []);
+
+  function update(platform: SocialPlatform, patch: Partial<SocialLinkForm>) {
+    setLinks((prev) => prev!.map((l) => (l.platform === platform ? { ...l, ...patch } : l)));
+  }
+
+  async function save() {
+    if (!links) return;
+    setSaving(true);
+    await fetch("/api/social-links", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ links }),
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <section>
+      <h2 className="font-display text-lg font-semibold text-fg">Social links</h2>
+      <p className="mt-1 text-sm text-fg-muted">
+        Shown as icon buttons in the hero, next to “View my work” and “Download CV”. Only enabled platforms
+        with a URL appear on the site.
+      </p>
+      {!links ? (
+        <div className="mt-4 flex items-center gap-2 text-sm text-fg-muted">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+        </div>
+      ) : (
+        <>
+          <div className="mt-4 space-y-3">
+            {SOCIAL_PLATFORM_ORDER.map((platform) => {
+              const link = links.find((l) => l.platform === platform)!;
+              const meta = SOCIAL_PLATFORM_META[platform];
+              const Icon = meta.icon;
+              return (
+                <Card key={platform} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="flex w-32 shrink-0 items-center gap-2 text-fg">
+                    <Icon className="h-4 w-4" /> {meta.label}
+                  </div>
+                  <div className="flex-1">
+                    <TextInput
+                      placeholder={`https://${platform}.com/…`}
+                      value={link.url}
+                      onChange={(e) => update(platform, { url: e.target.value })}
+                    />
+                  </div>
+                  <Toggle checked={link.visible} onChange={(v) => update(platform, { visible: v })} label="Visible" />
+                </Card>
+              );
+            })}
+          </div>
+          <Button onClick={save} disabled={saving} className="mt-4">
+            <Save className="h-4 w-4" /> {saving ? "Saving…" : saved ? "Saved" : "Save social links"}
+          </Button>
+        </>
+      )}
+    </section>
   );
 }
 

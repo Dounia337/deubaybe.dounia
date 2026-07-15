@@ -2,17 +2,19 @@ import { ArrowUpRight, ShieldCheck, FolderGit2, Sparkles, BookOpen } from "lucid
 import { ProfileHero } from "@/components/profile-hero";
 import { Section, Eyebrow, OverlayCard, Button, EmptyState } from "@/components/ui/primitives";
 import { Reveal, RevealGroup, RevealItem, Parallax, Mirror } from "@/components/ui/motion";
-import { ProjectsRepo, CyberRepo, ExperiencesRepo, ReflectionsRepo, CVRepo } from "@/db/repo";
+import { ProjectsRepo, CyberRepo, ExperiencesRepo, ReflectionsRepo, CVRepo, SocialLinksRepo } from "@/db/repo";
 import { formatDate } from "@/lib/format";
 
 export default async function HomePage() {
-  const [profile, allProjects, allCyberEntries, allExperiences, allReflections] = await Promise.all([
+  const [profile, allProjects, allCyberEntries, allExperiences, allReflections, allSocialLinks] = await Promise.all([
     CVRepo.profile(),
     ProjectsRepo.all(true),
     CyberRepo.all(true),
     ExperiencesRepo.all(true),
     ReflectionsRepo.all(true),
+    SocialLinksRepo.all(),
   ]);
+  const socialLinks = allSocialLinks.filter((l) => l.visible && l.url.trim());
   const projects = allProjects.slice(0, 3);
   const cyberEntries = allCyberEntries.slice(0, 2);
   const experiences = allExperiences.slice(0, 3);
@@ -20,7 +22,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <ProfileHero name={profile.full_name} headline={profile.headline} photoUrl={profile.photo_url} />
+      <ProfileHero
+        name={profile.full_name}
+        headline={profile.headline}
+        photoUrl={profile.photo_url}
+        socialLinks={socialLinks}
+      />
 
       {/* Projects preview */}
       <Section>

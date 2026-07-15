@@ -3,8 +3,24 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform, type Variants } from "framer-motion";
 import { ArrowUpRight, Download } from "lucide-react";
+import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
 import { Avatar, Button } from "@/components/ui/primitives";
 import { Mirror } from "@/components/ui/motion";
+import type { SocialPlatform } from "@/db/repo";
+
+const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
+  linkedin: FaLinkedin,
+  instagram: FaInstagram,
+  facebook: FaFacebook,
+  youtube: FaYoutube,
+};
+
+const SOCIAL_LABELS: Record<SocialPlatform, string> = {
+  linkedin: "LinkedIn",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  youtube: "YouTube",
+};
 
 const ROLES = [
   "Computer Science student",
@@ -27,10 +43,12 @@ export function ProfileHero({
   name,
   headline,
   photoUrl,
+  socialLinks = [],
 }: {
   name: string;
   headline: string;
   photoUrl?: string | null;
+  socialLinks?: { platform: SocialPlatform; url: string }[];
 }) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [typed, setTyped] = useState("");
@@ -98,31 +116,29 @@ export function ProfileHero({
         variants={container}
         className="relative mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-32"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 28, scale: 0.92, filter: "blur(16px)" }}
-          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 0.75, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-        >
+        {/* Portrait stays sharp and static at all times — every bit of blur/motion lives in the
+            surrounding glass + glow layers behind it, never on the photo itself. */}
+        <div className="group relative inline-block">
+          <div className="glass absolute -inset-5 rounded-full transition-transform duration-300 ease-out group-hover:scale-105" />
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute -inset-3 rounded-full bg-accent/25 blur-xl"
+            animate={{ scale: [1, 1.12, 1], opacity: [0.4, 0.15, 0.4] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          />
           <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="relative inline-block"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Ambient glow echoing the nav avatar's "you can click me" pulse — ties hero and header together */}
-            <motion.span
-              aria-hidden
-              className="pointer-events-none absolute -inset-3 rounded-full bg-accent/25 blur-xl"
-              animate={{ scale: [1, 1.12, 1], opacity: [0.4, 0.15, 0.4] }}
-              transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-            />
             <Avatar
               src={photoUrl}
               alt={name}
               size="clamp(148px, 30vw, 256px)"
-              className="relative shadow-2xl shadow-black/10 transition-transform duration-300 hover:scale-105"
+              className="relative shadow-2xl shadow-black/10"
             />
           </motion.div>
-        </motion.div>
+        </div>
 
         <motion.p
           variants={item}
@@ -152,6 +168,26 @@ export function ProfileHero({
             <Download className="h-4 w-4" /> Download CV
           </Button>
         </motion.div>
+
+        {socialLinks.length > 0 && (
+          <motion.div variants={item} className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+            {socialLinks.map((l) => {
+              const Icon = SOCIAL_ICONS[l.platform];
+              return (
+                <a
+                  key={l.platform}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={SOCIAL_LABELS[l.platform]}
+                  className="glass flex h-10 w-10 items-center justify-center rounded-full text-fg-muted transition-all duration-200 hover:-translate-y-0.5 hover:text-accent hover:shadow-md hover:shadow-accent/20"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              );
+            })}
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );

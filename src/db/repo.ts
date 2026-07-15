@@ -124,6 +124,16 @@ export type CVLeadership = {
   order_index: number;
 };
 
+export type SocialPlatform = "linkedin" | "instagram" | "facebook" | "youtube";
+
+export type SocialLink = {
+  id: number;
+  platform: SocialPlatform;
+  url: string;
+  visible: number;
+  updated_at: string;
+};
+
 // ---------- Helpers ----------
 
 export function slugify(input: string): string {
@@ -450,6 +460,33 @@ export const CVRepo = {
   },
   async removeLeadership(id: number): Promise<void> {
     await sql`DELETE FROM cv_leadership WHERE id = ${id}`;
+  },
+};
+
+// ---------- Social links ----------
+
+export const SOCIAL_PLATFORMS: SocialPlatform[] = ["linkedin", "instagram", "facebook", "youtube"];
+
+export const SocialLinksRepo = {
+  /** Always returns all four platforms in a fixed order, even before any row has been saved. */
+  async all(): Promise<SocialLink[]> {
+    const rows = await sql<SocialLink[]>`SELECT * FROM social_links`;
+    const byPlatform = new Map(rows.map((r) => [r.platform, r]));
+    return SOCIAL_PLATFORMS.map(
+      (platform, i) => byPlatform.get(platform) ?? { id: -(i + 1), platform, url: "", visible: 0, updated_at: "" }
+    );
+  },
+  async upsert(platform: SocialPlatform, data: { url: string; visible: boolean }): Promise<SocialLink> {
+    const rows = await sql<SocialLink[]>`
+      INSERT INTO social_links (platform, url, visible, updated_at)
+      VALUES (${platform}, ${data.url}, ${data.visible ? 1 : 0}, now()::text)
+      ON CONFLICT (platform) DO UPDATE SET
+        url = EXCLUDED.url,
+        visible = EXCLUDED.visible,
+        updated_at = now()::text
+      RETURNING *
+    `;
+    return rows[0];
   },
 };
 
