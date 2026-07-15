@@ -331,9 +331,9 @@ export function ProfileHero({
                           initial={{ opacity: 0, x: -6 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                          className="inline-block"
+                          className="ml-2 inline-block"
                         >
-                          {" "}am
+                          am
                         </motion.span>
                       )}
                     </>
