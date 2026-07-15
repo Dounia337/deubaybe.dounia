@@ -14,7 +14,6 @@ export function SiteFooter({ siteName }: { siteName: string }) {
           <div className="flex gap-5 text-sm text-fg-muted">
             <Link href="/cv" className="hover:text-accent">CV</Link>
             <Link href="/contact" className="hover:text-accent">Contact</Link>
-            <Link href="/admin/login" className="hover:text-accent">Admin</Link>
           </div>
         </div>
         <p className="mt-8 text-xs text-fg-subtle">

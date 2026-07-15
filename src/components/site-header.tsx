@@ -10,6 +10,7 @@ import { cx } from "@/lib/format";
 import { Avatar } from "@/components/ui/primitives";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
   { href: "/cybersecurity", label: "Cyber Lab" },
   { href: "/experiences", label: "Experiences" },
@@ -150,16 +151,12 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
                 exit={{ opacity: 0, transition: { duration: 0.1 } }}
                 className="flex flex-wrap items-center gap-1 pr-1.5"
               >
-                <Link
-                  href="/"
-                  className="whitespace-nowrap rounded-full px-3 py-2 font-display text-[15px] font-medium text-fg"
-                >
-                  {siteName}
-                </Link>
-
                 <nav className="flex flex-wrap items-center gap-1">
                   {NAV_LINKS.map((link) => {
-                    const active = pathname === link.href || pathname.startsWith(link.href + "/");
+                    const active =
+                      link.href === "/"
+                        ? pathname === "/"
+                        : pathname === link.href || pathname.startsWith(link.href + "/");
                     return (
                       <Link
                         key={link.href}

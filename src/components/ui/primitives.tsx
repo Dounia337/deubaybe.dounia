@@ -59,7 +59,7 @@ export function Section({
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <span className="glass mb-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium tracking-wide text-accent">
+    <span className="glass mb-4 inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium tracking-wide text-accent">
       {children}
     </span>
   );
@@ -82,12 +82,12 @@ export function PageHeader({
         {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="mb-5 justify-center" />}
         <Eyebrow>{eyebrow}</Eyebrow>
         <Mirror className="mt-2">
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl lg:text-6xl">
             {title}
           </h1>
         </Mirror>
         {description && (
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-fg-muted">{description}</p>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-fg-muted">{description}</p>
         )}
       </Reveal>
     </div>
@@ -108,68 +108,96 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Top-of-card photo slot. Falls back to a soft tinted tile with a
- * centered icon when no image has been set yet (e.g. before an admin
- * uploads one), so cards never look broken.
+ * Editorial media card: full-bleed photo with title/meta overlaid directly on
+ * a bottom scrim, instead of stacked below in a separate text panel. Falls
+ * back to a tinted gradient + icon when no image has been set yet, so cards
+ * never look broken before an admin uploads a real photo.
  */
-export function CardMedia({
+export function OverlayCard({
+  href,
   src,
   alt,
   icon,
-  aspect = "aspect-[4/3]",
+  category,
+  title,
+  tags,
+  date,
+  aspect = "aspect-[4/5]",
+  className,
 }: {
+  href?: string;
   src?: string | null;
   alt: string;
   icon: ReactNode;
+  category?: string;
+  title: string;
+  tags?: string[];
+  date?: string;
   aspect?: string;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
 
-  return (
-    <div ref={ref} className={cx("relative w-full overflow-hidden bg-bg-sunken", aspect)}>
+  const card = (
+    <div
+      ref={ref}
+      className={cx(
+        "group relative flex h-full w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
+        aspect,
+        className
+      )}
+    >
       {src ? (
         <motion.div style={{ y }} className="absolute -inset-y-[8%] inset-x-0">
           <Image
             src={src}
             alt={alt}
             fill
-            sizes="(min-width: 1024px) 400px, 100vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+            sizes="(min-width: 1024px) 420px, 100vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.08]"
           />
         </motion.div>
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent/15 via-transparent to-accent-secondary/15 transition-colors duration-300 group-hover:from-accent/25 group-hover:to-accent-secondary/25">
-          <span className="text-accent transition-transform duration-300 group-hover:scale-110 [&_svg]:h-8 [&_svg]:w-8">
-            {icon}
-          </span>
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent/30 via-bg-sunken to-accent-secondary/30 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
+          <span className="text-accent/50 [&_svg]:h-16 [&_svg]:w-16 sm:[&_svg]:h-20 sm:[&_svg]:w-20">{icon}</span>
         </div>
       )}
+
+      {/* Scrim: guarantees the overlaid text stays legible over any image */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/0" />
+
+      <div className="relative p-5 sm:p-6">
+        {category && (
+          <span className="glass mb-2.5 inline-flex items-center rounded-full border-white/20 bg-white/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-white">
+            {category}
+          </span>
+        )}
+        <h3 className="font-display text-xl font-semibold text-white drop-shadow-sm sm:text-2xl">{title}</h3>
+        {tags && tags.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {tags.slice(0, 3).map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[11px] text-white/85"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+        {date && <p className="mt-2.5 text-xs text-white/70">{date}</p>}
+      </div>
     </div>
   );
-}
 
-/** A Card with a full-bleed photo (or icon placeholder) above the padded content. */
-export function MediaCard({
-  media,
-  children,
-  className,
-}: {
-  media: ReactNode;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cx(
-        "glass group flex flex-col overflow-hidden rounded-2xl shadow-sm shadow-black/[0.03] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-black/[0.08]",
-        className
-      )}
-    >
-      {media}
-      <div className="flex flex-1 flex-col p-6">{children}</div>
-    </div>
+  return href ? (
+    <Link href={href} className="block h-full">
+      {card}
+    </Link>
+  ) : (
+    card
   );
 }
 
@@ -181,7 +209,7 @@ export function Avatar({
 }: {
   src?: string | null;
   alt: string;
-  size?: number;
+  size?: number | string;
   className?: string;
 }) {
   return (
@@ -193,7 +221,7 @@ export function Avatar({
       style={{ width: size, height: size }}
     >
       {src ? (
-        <Image src={src} alt={alt} fill sizes={`${size}px`} className="object-cover" />
+        <Image src={src} alt={alt} fill sizes={typeof size === "number" ? `${size}px` : "240px"} className="object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center font-display text-sm font-medium text-accent">
           {alt.charAt(0).toUpperCase()}

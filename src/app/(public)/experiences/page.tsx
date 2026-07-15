@@ -27,23 +27,23 @@ export default async function ExperiencesPage() {
               <li key={e.id} className="relative">
                 <span className="absolute -left-[38px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-bg bg-accent-tertiary" />
                 <Reveal>
-                  <Card className="flex flex-col gap-4 sm:flex-row">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-bg-sunken">
+                  <Card className="flex flex-col gap-5 sm:flex-row">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-bg-sunken sm:h-28 sm:w-28">
                       {e.image_url ? (
-                        <Image src={e.image_url} alt={e.title} fill sizes="80px" className="object-cover" />
+                        <Image src={e.image_url} alt={e.title} fill sizes="112px" className="object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-tertiary/15 via-transparent to-accent/15">
-                          <Sparkles className="h-6 w-6 text-accent-tertiary" />
+                          <Sparkles className="h-7 w-7 text-accent-tertiary" />
                         </div>
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h3 className="font-display text-lg font-medium text-fg">{e.title}</h3>
+                        <h3 className="font-display text-xl font-medium text-fg">{e.title}</h3>
                         <span className="text-xs text-fg-subtle">{formatDate(e.event_date)}</span>
                       </div>
                       <Chip>{e.type}</Chip>
-                      <p className="mt-3 text-sm leading-relaxed text-fg-muted">{e.description}</p>
+                      <p className="mt-3 text-[15px] leading-relaxed text-fg-muted">{e.description}</p>
                       {e.key_takeaway && (
                         <p className="mt-3 border-t border-border pt-3 text-sm text-fg">
                           <span className="font-mono text-xs uppercase tracking-wider text-accent">

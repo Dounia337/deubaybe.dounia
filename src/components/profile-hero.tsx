@@ -96,7 +96,7 @@ export function ProfileHero({
         initial="hidden"
         animate="show"
         variants={container}
-        className="relative mx-auto flex max-w-2xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-28"
+        className="relative mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-32"
       >
         <motion.div
           variants={item}
@@ -106,32 +106,32 @@ export function ProfileHero({
           <Avatar
             src={photoUrl}
             alt={name}
-            size={200}
+            size="clamp(148px, 30vw, 256px)"
             className="shadow-2xl shadow-black/10 transition-transform duration-300 hover:scale-105"
           />
         </motion.div>
 
         <motion.p
           variants={item}
-          className="mt-6 flex min-h-[1.5em] items-center justify-center gap-0.5 text-sm font-medium text-accent"
+          className="mt-7 flex min-h-[1.5em] items-center justify-center gap-0.5 text-base font-medium text-accent"
         >
           {typed}
           <span className="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-accent align-middle" />
         </motion.p>
 
-        <motion.div variants={item} className="mt-3">
+        <motion.div variants={item} className="mt-4">
           <Mirror>
-            <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">
+            <h1 className="font-display text-5xl font-semibold tracking-tight text-fg sm:text-6xl lg:text-7xl">
               {name}
             </h1>
           </Mirror>
         </motion.div>
 
-        <motion.p variants={item} className="mt-5 max-w-lg text-lg leading-relaxed text-fg-muted">
+        <motion.p variants={item} className="mt-6 max-w-xl text-xl leading-relaxed text-fg-muted">
           {headline}
         </motion.p>
 
-        <motion.div variants={item} className="mt-8 flex flex-wrap justify-center gap-3">
+        <motion.div variants={item} className="mt-9 flex flex-wrap justify-center gap-3">
           <Button href="/projects" variant="primary">
             View my work <ArrowUpRight className="h-4 w-4" />
           </Button>
