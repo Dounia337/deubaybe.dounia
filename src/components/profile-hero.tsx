@@ -38,21 +38,18 @@ const ROLES = [
   "Youth development lead",
 ];
 
-// Timing for the one-time entrance: "Hello," -> "I am" -> full identity reveal.
+// Timing for the one-time entrance: "Hello," -> "I am" -> photo + identity reveal.
 const HELLO_DURATION = 1300;
 const IAM_DURATION = 1100;
 
-// How long each featured item holds before crossfading to the next one.
-const FEATURED_DURATION = 6500;
+// How long each slot (identity details, or a featured item) holds before handing off to the next.
+const SLOT_DURATION = 7000;
 
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-};
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(8px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+// The photo + the slot beneath it reveal together, once, as a simple fade/slide — no blur on
+// this wrapper, since it contains the portrait and the photo must never be blurred.
+const reveal: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const greeting: Variants = {
@@ -61,10 +58,13 @@ const greeting: Variants = {
   exit: { opacity: 0, y: -10, filter: "blur(8px)", transition: { duration: 0.35, ease: [0.4, 0, 1, 1] } },
 };
 
-const featuredSlide: Variants = {
-  hidden: { opacity: 0, y: 14, filter: "blur(6px)" },
+// Shared transition for whatever currently occupies the slot beneath the photo — the identity
+// details (name/buttons/socials) and each featured item all use this same slide, so handing off
+// between them feels like one continuous motion language rather than different UI moments.
+const slot: Variants = {
+  hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
   show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-  exit: { opacity: 0, y: -10, filter: "blur(6px)", transition: { duration: 0.35, ease: [0.4, 0, 1, 1] } },
+  exit: { opacity: 0, y: -18, filter: "blur(8px)", transition: { duration: 0.4, ease: [0.4, 0, 1, 1] } },
 };
 
 export function ProfileHero({
@@ -100,18 +100,18 @@ export function ProfileHero({
     return () => clearTimeout(t);
   }, [introPhase]);
 
-  // The identity (photo, name, headline) never leaves once it arrives — featured content is a
-  // second, independent layer beneath it that cycles on its own, paused on hover/focus so
-  // nobody mid-read gets the card swapped out from under them.
-  const [featuredIndex, setFeaturedIndex] = useState(0);
+  // One shared slot beneath the (always-visible-once-revealed) photo: slot 0 is the identity
+  // details (name/headline/buttons/socials), slots 1..N are the featured items. They take turns
+  // in the exact same space — the photo itself never belongs to this rotation.
+  const totalSlots = 1 + featured.length;
+  const [slotIndex, setSlotIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const hasFeatured = featured.length > 0;
 
   useEffect(() => {
-    if (prefersReducedMotion || introPhase !== "identity" || featured.length < 2 || paused) return;
-    const t = setTimeout(() => setFeaturedIndex((i) => (i + 1) % featured.length), FEATURED_DURATION);
+    if (prefersReducedMotion || introPhase !== "identity" || totalSlots <= 1 || paused) return;
+    const t = setTimeout(() => setSlotIndex((i) => (i + 1) % totalSlots), SLOT_DURATION);
     return () => clearTimeout(t);
-  }, [introPhase, featuredIndex, featured.length, paused, prefersReducedMotion]);
+  }, [introPhase, slotIndex, totalSlots, paused, prefersReducedMotion]);
 
   const [roleIndex, setRoleIndex] = useState(0);
   const [typed, setTyped] = useState("");
@@ -155,7 +155,7 @@ export function ProfileHero({
     rawY.set(((e.clientY - rect.top) / rect.height - 0.5) * 2);
   }
 
-  const activeFeatured = featured[featuredIndex];
+  const activeFeatured = slotIndex > 0 ? featured[slotIndex - 1] : undefined;
 
   return (
     <div
@@ -178,16 +178,15 @@ export function ProfileHero({
       />
 
       <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-32">
-        {/* Primary layer — the identity. Always present in the markup (SEO/no-JS safe); the
-            intro sequence only ever controls its opacity/blur on the way in, and once it has
-            arrived it stays — featured content never displaces it. */}
-        <motion.div
-          initial={false}
-          animate={introPhase === "identity" ? "show" : "hidden"}
-          variants={container}
-          className="relative flex flex-col items-center"
-        >
-          <div className="relative flex w-full flex-col items-center">
+        <div className="relative">
+          {/* Photo + slot reveal together, once, as the "first full identity moment" — always
+              present in the markup (SEO/no-JS safe), only their opacity is gated on the intro. */}
+          <motion.div
+            initial={false}
+            animate={introPhase === "identity" ? "show" : "hidden"}
+            variants={reveal}
+            className="flex flex-col items-center"
+          >
             <div className="group relative inline-block">
               <div className="glass absolute -inset-5 rounded-full transition-transform duration-300 ease-out group-hover:scale-105" />
               <motion.span
@@ -204,125 +203,122 @@ export function ProfileHero({
               />
             </div>
 
-            <motion.p
-              variants={item}
-              className="mt-7 flex min-h-[1.5em] items-center justify-center gap-0.5 text-base font-medium text-accent"
-            >
-              {typed}
-              <span className="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-accent align-middle" />
-            </motion.p>
+            {/* The rotating slot — identity details and featured items take turns here, in the
+                exact same space, so featured content replaces the name/buttons/socials rather
+                than appearing as a separate section. */}
+            <div className="relative mt-7 w-full">
+              <AnimatePresence mode="wait" initial={false}>
+                {slotIndex === 0 ? (
+                  <motion.div
+                    key="identity-details"
+                    variants={slot}
+                    initial="hidden"
+                    animate="show"
+                    exit="exit"
+                    className="flex flex-col items-center"
+                  >
+                    <p className="flex min-h-[1.5em] items-center justify-center gap-0.5 text-base font-medium text-accent">
+                      {typed}
+                      <span className="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-accent align-middle" />
+                    </p>
 
-            <motion.div variants={item} className="mt-4">
-              <h1 className="text-shine font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
-                {name}
-              </h1>
-            </motion.div>
+                    <h1 className="text-shine mt-4 font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
+                      {name}
+                    </h1>
 
-            <motion.p variants={item} className="mt-6 max-w-xl text-xl leading-relaxed text-fg-muted">
-              {headline}
-            </motion.p>
+                    <p className="mt-6 max-w-xl text-xl leading-relaxed text-fg-muted">{headline}</p>
 
-            <motion.div variants={item} className="mt-9 flex flex-wrap justify-center gap-3">
-              <Button href="/projects" variant="primary">
-                View my work <ArrowUpRight className="h-4 w-4" />
-              </Button>
-              <Button href="/cv" variant="secondary">
-                <Download className="h-4 w-4" /> Download CV
-              </Button>
-            </motion.div>
+                    <div className="mt-9 flex flex-wrap justify-center gap-3">
+                      <Button href="/projects" variant="primary">
+                        View my work <ArrowUpRight className="h-4 w-4" />
+                      </Button>
+                      <Button href="/cv" variant="secondary">
+                        <Download className="h-4 w-4" /> Download CV
+                      </Button>
+                    </div>
 
-            {socialLinks.length > 0 && (
-              <motion.div variants={item} className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                {socialLinks.map((l) => {
-                  const Icon = SOCIAL_ICONS[l.platform];
-                  return (
-                    <a
-                      key={l.platform}
-                      href={l.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={SOCIAL_LABELS[l.platform]}
-                      className="glass flex h-10 w-10 items-center justify-center rounded-full text-fg-muted transition-all duration-200 hover:-translate-y-0.5 hover:text-accent hover:shadow-md hover:shadow-accent/20"
-                    >
-                      <Icon className="h-4 w-4" />
-                    </a>
-                  );
-                })}
+                    {socialLinks.length > 0 && (
+                      <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                        {socialLinks.map((l) => {
+                          const Icon = SOCIAL_ICONS[l.platform];
+                          return (
+                            <a
+                              key={l.platform}
+                              href={l.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={SOCIAL_LABELS[l.platform]}
+                              className="glass flex h-10 w-10 items-center justify-center rounded-full text-fg-muted transition-all duration-200 hover:-translate-y-0.5 hover:text-accent hover:shadow-md hover:shadow-accent/20"
+                            >
+                              <Icon className="h-4 w-4" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </motion.div>
+                ) : (
+                  activeFeatured && (
+                    <motion.div key={`featured-${slotIndex}`} variants={slot} initial="hidden" animate="show" exit="exit">
+                      <Eyebrow>{activeFeatured.label}</Eyebrow>
+                      <Link
+                        href={activeFeatured.href}
+                        className="glass mx-auto mt-4 flex w-full max-w-xl flex-col overflow-hidden rounded-3xl text-left shadow-lg shadow-black/[0.06] transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:items-stretch"
+                      >
+                        <div className="relative h-40 w-full shrink-0 sm:h-auto sm:w-44">
+                          {activeFeatured.image_url ? (
+                            <Image
+                              src={activeFeatured.image_url}
+                              alt={activeFeatured.title}
+                              fill
+                              sizes="176px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent/25 via-bg-sunken to-accent-secondary/25">
+                              <Sparkles className="h-9 w-9 text-accent/50" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-1 flex-col justify-center gap-1.5 p-5 sm:p-6">
+                          <h3 className="font-display text-xl font-semibold text-fg sm:text-2xl">
+                            {activeFeatured.title}
+                          </h3>
+                          <p className="line-clamp-2 text-sm leading-relaxed text-fg-muted">
+                            {activeFeatured.description}
+                          </p>
+                          <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+                            View more <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Greeting overlay — "Hello," / "I am" — centered over the whole photo+slot box
+              (which already occupies its final size, just invisible) so nothing shifts once
+              it hands off, and no picture or text beneath ever peeks through. */}
+          <AnimatePresence>
+            {(introPhase === "hello" || introPhase === "iam") && (
+              <motion.div
+                key={introPhase}
+                variants={greeting}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <p className="font-display text-4xl font-medium text-fg-muted sm:text-5xl">
+                  {introPhase === "hello" ? "Hello," : "I am"}
+                </p>
               </motion.div>
             )}
-
-            {/* Greeting overlay — purely decorative intro copy, absolutely centered over just
-                this identity-core box so it never leaks into the featured section's space. */}
-            <AnimatePresence>
-              {(introPhase === "hello" || introPhase === "iam") && (
-                <motion.div
-                  key={introPhase}
-                  variants={greeting}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <p className="font-display text-4xl font-medium text-fg-muted sm:text-5xl">
-                    {introPhase === "hello" ? "Hello," : "I am"}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Secondary layer — featured content, presented alongside the identity above,
-              never in place of it. Only this area animates once it's up and cycling. */}
-          {hasFeatured && activeFeatured && (
-            <motion.div
-              variants={item}
-              className="mt-12 w-full border-t border-border pt-10 sm:mt-14 sm:pt-12"
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`featured-${featuredIndex}`}
-                  variants={featuredSlide}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                >
-                  <Eyebrow>{activeFeatured.label}</Eyebrow>
-                  <Link
-                    href={activeFeatured.href}
-                    className="glass mx-auto mt-4 flex w-full max-w-xl flex-col overflow-hidden rounded-3xl text-left shadow-lg shadow-black/[0.06] transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:items-stretch"
-                  >
-                    <div className="relative h-40 w-full shrink-0 sm:h-auto sm:w-44">
-                      {activeFeatured.image_url ? (
-                        <Image
-                          src={activeFeatured.image_url}
-                          alt={activeFeatured.title}
-                          fill
-                          sizes="176px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent/25 via-bg-sunken to-accent-secondary/25">
-                          <Sparkles className="h-9 w-9 text-accent/50" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col justify-center gap-1.5 p-5 sm:p-6">
-                      <h3 className="font-display text-xl font-semibold text-fg sm:text-2xl">
-                        {activeFeatured.title}
-                      </h3>
-                      <p className="line-clamp-2 text-sm leading-relaxed text-fg-muted">
-                        {activeFeatured.description}
-                      </p>
-                      <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
-                        View more <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-                  </Link>
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
