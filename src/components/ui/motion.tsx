@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useRef, type ReactNode, type CSSProperties } from "react";
-import { cx } from "@/lib/format";
+import { useRef, type ReactNode } from "react";
 
 const item: Variants = {
   hidden: { opacity: 0, y: 24, filter: "blur(10px)" },
@@ -63,27 +62,6 @@ export function RevealItem({ children, className }: { children: ReactNode; class
     <motion.div className={className} variants={item}>
       {children}
     </motion.div>
-  );
-}
-
-/**
- * Renders a faded, vertically-flipped duplicate of `children` directly beneath it —
- * a glassy "reflection" for prominent display text (hero name, section titles).
- * The duplicate is aria-hidden and inert; use sparingly on large headings only.
- */
-export function Mirror({ children, className }: { children: ReactNode; className?: string }) {
-  const maskStyle: CSSProperties = {
-    transform: "scaleY(-1)",
-    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.32), transparent 65%)",
-    WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.32), transparent 65%)",
-  };
-  return (
-    <div className={cx("relative", className)}>
-      {children}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-full -mt-1 select-none" style={maskStyle}>
-        {children}
-      </div>
-    </div>
   );
 }
 

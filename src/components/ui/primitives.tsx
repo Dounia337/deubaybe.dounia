@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ChevronRight, Home as HomeIcon } from "lucide-react";
 import { cx } from "@/lib/format";
-import { Reveal, Mirror } from "@/components/ui/motion";
+import { Reveal } from "@/components/ui/motion";
 import type { ReactNode } from "react";
 
 export type Crumb = { label: string; href?: string };
@@ -81,11 +81,9 @@ export function PageHeader({
       <Reveal className="mx-auto max-w-2xl px-4 py-14 text-center sm:px-6">
         {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="mb-5 justify-center" />}
         <Eyebrow>{eyebrow}</Eyebrow>
-        <Mirror className="mt-2">
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl lg:text-6xl">
-            {title}
-          </h1>
-        </Mirror>
+        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl lg:text-6xl">
+          {title}
+        </h1>
         {description && (
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-fg-muted">{description}</p>
         )}

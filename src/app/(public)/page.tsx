@@ -1,7 +1,7 @@
 import { ArrowUpRight, ShieldCheck, FolderGit2, Sparkles, BookOpen } from "lucide-react";
 import { ProfileHero } from "@/components/profile-hero";
 import { Section, Eyebrow, OverlayCard, Button, EmptyState } from "@/components/ui/primitives";
-import { Reveal, RevealGroup, RevealItem, Parallax, Mirror } from "@/components/ui/motion";
+import { Reveal, RevealGroup, RevealItem, Parallax } from "@/components/ui/motion";
 import { ProjectsRepo, CyberRepo, ExperiencesRepo, ReflectionsRepo, CVRepo, SocialLinksRepo } from "@/db/repo";
 import { formatDate } from "@/lib/format";
 
@@ -34,9 +34,7 @@ export default async function HomePage() {
         <Reveal className="mx-auto mb-10 max-w-xl text-center">
           <Parallax offset={14}>
             <Eyebrow>Projects</Eyebrow>
-            <Mirror className="mt-2">
-              <h2 className="font-display text-4xl font-semibold text-fg sm:text-5xl">Things I&apos;ve built</h2>
-            </Mirror>
+            <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Things I&apos;ve built</h2>
           </Parallax>
           <div className="mt-5">
             <Button href="/projects" variant="ghost">
@@ -73,9 +71,7 @@ export default async function HomePage() {
         <Reveal className="mx-auto mb-10 max-w-xl text-center">
           <Parallax offset={14}>
             <Eyebrow>Cyber Lab</Eyebrow>
-            <Mirror className="mt-2">
-              <h2 className="font-display text-4xl font-semibold text-fg sm:text-5xl">Blue team notes</h2>
-            </Mirror>
+            <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Blue team notes</h2>
           </Parallax>
           <div className="mt-5">
             <Button href="/cybersecurity" variant="ghost">
@@ -110,9 +106,7 @@ export default async function HomePage() {
         <Reveal className="mx-auto mb-10 max-w-xl text-center">
           <Parallax offset={14}>
             <Eyebrow>Experiences</Eyebrow>
-            <Mirror className="mt-2">
-              <h2 className="font-display text-4xl font-semibold text-fg sm:text-5xl">Trainings &amp; convenings</h2>
-            </Mirror>
+            <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Trainings &amp; convenings</h2>
           </Parallax>
           <div className="mt-5">
             <Button href="/experiences" variant="ghost">
@@ -148,9 +142,7 @@ export default async function HomePage() {
         <Reveal className="mx-auto mb-10 max-w-xl text-center">
           <Parallax offset={14}>
             <Eyebrow>Reflections</Eyebrow>
-            <Mirror className="mt-2">
-              <h2 className="font-display text-4xl font-semibold text-fg sm:text-5xl">Recent writing</h2>
-            </Mirror>
+            <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Recent writing</h2>
           </Parallax>
           <div className="mt-5">
             <Button href="/reflections" variant="ghost">

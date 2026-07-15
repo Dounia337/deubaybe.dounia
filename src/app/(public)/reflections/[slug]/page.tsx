@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
-import { Reveal, Mirror } from "@/components/ui/motion";
+import { Reveal } from "@/components/ui/motion";
 import { ReflectionsRepo } from "@/db/repo";
 import { formatDate } from "@/lib/format";
 
@@ -28,9 +28,7 @@ export default async function ReflectionDetailPage({ params }: { params: Promise
 
       <Reveal>
         <p className="font-mono text-xs text-fg-subtle">{formatDate(reflection.post_date)}</p>
-        <Mirror className="mt-2">
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{reflection.title}</h1>
-        </Mirror>
+        <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{reflection.title}</h1>
         <div className="mt-5 flex flex-wrap gap-1.5">
           {tags.map((t) => (
             <Chip key={t}>{t}</Chip>

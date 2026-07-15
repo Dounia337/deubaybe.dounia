@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { GitFork, ExternalLink } from "lucide-react";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
-import { Reveal, RevealGroup, RevealItem, Mirror } from "@/components/ui/motion";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
 import { ProjectsRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,9 +26,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       />
 
       <Reveal>
-        <Mirror>
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{project.title}</h1>
-        </Mirror>
+        <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{project.title}</h1>
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           {stack.map((t) => (

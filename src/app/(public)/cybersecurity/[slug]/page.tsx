@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
-import { Reveal, Mirror } from "@/components/ui/motion";
+import { Reveal } from "@/components/ui/motion";
 import { CyberRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,9 +26,7 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
 
       <Reveal>
         <Chip>{entry.category}</Chip>
-        <Mirror className="mt-4">
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{entry.title}</h1>
-        </Mirror>
+        <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{entry.title}</h1>
 
         {entry.image_url && (
           <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">

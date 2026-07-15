@@ -1,15 +1,12 @@
 import { Button, Eyebrow } from "@/components/ui/primitives";
-import { Mirror } from "@/components/ui/motion";
 
 export default function NotFound() {
   return (
     <div className="hero-wash flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
       <Eyebrow>404</Eyebrow>
-      <Mirror className="mt-2">
-        <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">
-          Nothing here yet
-        </h1>
-      </Mirror>
+      <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">
+        Nothing here yet
+      </h1>
       <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-fg-muted">
         The page you&apos;re looking for doesn&apos;t exist or hasn&apos;t been published yet.
       </p>

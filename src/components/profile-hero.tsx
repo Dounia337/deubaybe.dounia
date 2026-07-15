@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform, type Variants } from "
 import { ArrowUpRight, Download } from "lucide-react";
 import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
 import { Avatar, Button } from "@/components/ui/primitives";
-import { Mirror } from "@/components/ui/motion";
 import type { SocialPlatform } from "@/db/repo";
 
 const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
@@ -149,11 +148,9 @@ export function ProfileHero({
         </motion.p>
 
         <motion.div variants={item} className="mt-4">
-          <Mirror>
-            <h1 className="text-shine font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
-              {name}
-            </h1>
-          </Mirror>
+          <h1 className="text-shine font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
+            {name}
+          </h1>
         </motion.div>
 
         <motion.p variants={item} className="mt-6 max-w-xl text-xl leading-relaxed text-fg-muted">
