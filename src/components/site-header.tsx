@@ -8,6 +8,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { cx } from "@/lib/format";
 import { Avatar } from "@/components/ui/primitives";
+import { HERO_INTRO_MS } from "@/lib/hero-timing";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -20,6 +21,9 @@ const NAV_LINKS = [
 ];
 
 const AUTO_PEEK_DELAY = 1100;
+// On the homepage, the hero plays its own "Hello, / I am / [identity]" entrance — the nav
+// shouldn't detach and compete for attention until that has fully landed.
+const HOME_AUTO_PEEK_DELAY = HERO_INTRO_MS + 300;
 const AUTO_PEEK_DURATION = 2600;
 const CLICK_OPEN_DURATION = 3200;
 
@@ -56,14 +60,18 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
     }, delay);
   }
 
-  // Quietly teach the interaction once: peek open shortly after load, then retract.
+  // Quietly teach the interaction once: peek open shortly after load, then retract. Delayed
+  // on the homepage until the hero's own entrance has finished, so the two don't compete.
   useEffect(() => {
     if (prefersReducedMotion) return;
+    const delay = pathname === "/" ? HOME_AUTO_PEEK_DELAY : AUTO_PEEK_DELAY;
     const openTimer = setTimeout(() => {
       setExpanded(true);
       scheduleClose(AUTO_PEEK_DURATION);
-    }, AUTO_PEEK_DELAY);
+    }, delay);
     return () => clearTimeout(openTimer);
+    // Intentionally mount-only — re-firing this on every client-side navigation would mean
+    // "teach the interaction once" becomes "re-teach it on every page visit".
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersReducedMotion]);
 

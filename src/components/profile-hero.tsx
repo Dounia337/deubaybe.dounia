@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Download, Sparkles } from "lucide-react";
 import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
 import { Avatar, Button, Eyebrow } from "@/components/ui/primitives";
+import { HELLO_DURATION, I_DURATION, AM_DURATION } from "@/lib/hero-timing";
 import type { FeaturedItem, SocialPlatform } from "@/db/repo";
 
 const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
@@ -37,10 +38,6 @@ const ROLES = [
   "Builder for African contexts",
   "Youth development lead",
 ];
-
-// Timing for the one-time entrance: "Hello," -> "I am" -> photo + identity reveal.
-const HELLO_DURATION = 1300;
-const IAM_DURATION = 1100;
 
 // How long each slot (identity details, or a featured item) holds before handing off to the next.
 const SLOT_DURATION = 7000;
@@ -83,20 +80,28 @@ export function ProfileHero({
   const prefersReducedMotion = useReducedMotion();
 
   // Entrance choreography: skip straight to the final state for reduced-motion visitors —
-  // a flashing "Hello, / I am" that immediately disappears helps no one.
-  const [introPhase, setIntroPhase] = useState<"hello" | "iam" | "identity">(
+  // a flashing "Hello, / I am" that immediately disappears helps no one. Otherwise the greeting
+  // builds word by word — "Hello," then "I" then "am" joins it a beat later — before the photo
+  // and identity land.
+  const [introPhase, setIntroPhase] = useState<"hello" | "i" | "am" | "identity">(
     prefersReducedMotion ? "identity" : "hello"
   );
 
   useEffect(() => {
     if (introPhase !== "hello") return;
-    const t = setTimeout(() => setIntroPhase("iam"), HELLO_DURATION);
+    const t = setTimeout(() => setIntroPhase("i"), HELLO_DURATION);
     return () => clearTimeout(t);
   }, [introPhase]);
 
   useEffect(() => {
-    if (introPhase !== "iam") return;
-    const t = setTimeout(() => setIntroPhase("identity"), IAM_DURATION);
+    if (introPhase !== "i") return;
+    const t = setTimeout(() => setIntroPhase("am"), I_DURATION);
+    return () => clearTimeout(t);
+  }, [introPhase]);
+
+  useEffect(() => {
+    if (introPhase !== "am") return;
+    const t = setTimeout(() => setIntroPhase("identity"), AM_DURATION);
     return () => clearTimeout(t);
   }, [introPhase]);
 
@@ -299,13 +304,16 @@ export function ProfileHero({
             </div>
           </motion.div>
 
-          {/* Greeting overlay — "Hello," / "I am" — centered over the whole photo+slot box
-              (which already occupies its final size, just invisible) so nothing shifts once
-              it hands off, and no picture or text beneath ever peeks through. */}
+          {/* Greeting overlay — "Hello," then "I" then "am" joins it a beat later — centered
+              over the whole photo+slot box (which already occupies its final size, just
+              invisible) so nothing shifts once it hands off, and no picture or text beneath
+              ever peeks through. The "hello"->"i" swap is a full AnimatePresence crossfade;
+              "i"->"am" keeps the same block on screen and just adds the second word beside it,
+              so "I" never re-animates when "am" joins. */}
           <AnimatePresence>
-            {(introPhase === "hello" || introPhase === "iam") && (
+            {introPhase !== "identity" && (
               <motion.div
-                key={introPhase}
+                key={introPhase === "hello" ? "hello" : "i-am"}
                 variants={greeting}
                 initial="hidden"
                 animate="show"
@@ -313,7 +321,23 @@ export function ProfileHero({
                 className="absolute inset-0 flex items-center justify-center"
               >
                 <p className="font-display text-4xl font-medium text-fg-muted sm:text-5xl">
-                  {introPhase === "hello" ? "Hello," : "I am"}
+                  {introPhase === "hello" ? (
+                    "Hello,"
+                  ) : (
+                    <>
+                      I
+                      {introPhase === "am" && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                          className="inline-block"
+                        >
+                          {" "}am
+                        </motion.span>
+                      )}
+                    </>
+                  )}
                 </p>
               </motion.div>
             )}
