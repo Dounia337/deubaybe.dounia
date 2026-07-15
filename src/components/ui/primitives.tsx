@@ -122,7 +122,7 @@ export function OverlayCard({
   title,
   tags,
   date,
-  aspect = "aspect-[4/5]",
+  aspect = "aspect-[10/11]",
   className,
 }: {
   href?: string;

@@ -99,16 +99,29 @@ export function ProfileHero({
         className="relative mx-auto flex max-w-3xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-32"
       >
         <motion.div
-          variants={item}
-          animate={{ y: [0, -10, 0] }}
-          transition={{ y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
+          initial={{ opacity: 0, y: 28, scale: 0.92, filter: "blur(16px)" }}
+          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          transition={{ duration: 0.75, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Avatar
-            src={photoUrl}
-            alt={name}
-            size="clamp(148px, 30vw, 256px)"
-            className="shadow-2xl shadow-black/10 transition-transform duration-300 hover:scale-105"
-          />
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="relative inline-block"
+          >
+            {/* Ambient glow echoing the nav avatar's "you can click me" pulse — ties hero and header together */}
+            <motion.span
+              aria-hidden
+              className="pointer-events-none absolute -inset-3 rounded-full bg-accent/25 blur-xl"
+              animate={{ scale: [1, 1.12, 1], opacity: [0.4, 0.15, 0.4] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <Avatar
+              src={photoUrl}
+              alt={name}
+              size="clamp(148px, 30vw, 256px)"
+              className="relative shadow-2xl shadow-black/10 transition-transform duration-300 hover:scale-105"
+            />
+          </motion.div>
         </motion.div>
 
         <motion.p
@@ -121,7 +134,7 @@ export function ProfileHero({
 
         <motion.div variants={item} className="mt-4">
           <Mirror>
-            <h1 className="font-display text-5xl font-semibold tracking-tight text-fg sm:text-6xl lg:text-7xl">
+            <h1 className="text-gradient font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
               {name}
             </h1>
           </Mirror>
