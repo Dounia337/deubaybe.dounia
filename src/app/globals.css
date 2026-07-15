@@ -3,41 +3,41 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #faf7f2;
+  --bg: #f6f7fa;
   --bg-elevated: #ffffff;
-  --bg-sunken: #f0eae0;
-  --fg: #201b14;
-  --fg-muted: #6b6154;
-  --fg-subtle: #9c917f;
-  --border: rgba(32, 27, 20, 0.1);
-  --border-strong: rgba(32, 27, 20, 0.18);
-  --accent: #c1622d;
-  --accent-secondary: #2f6e5c;
-  --accent-tertiary: #b7791f;
-  --accent-glow: rgba(193, 98, 45, 0.18);
-  --danger: #c0392b;
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-strong: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(32, 27, 20, 0.08);
+  --bg-sunken: #eceff5;
+  --fg: #0b1526;
+  --fg-muted: #4c5872;
+  --fg-subtle: #616c85;
+  --border: rgba(11, 21, 38, 0.1);
+  --border-strong: rgba(11, 21, 38, 0.18);
+  --accent: #1b2a4e;
+  --accent-secondary: #3e5c8a;
+  --accent-tertiary: #14171d;
+  --accent-glow: rgba(27, 42, 78, 0.16);
+  --danger: #a3372f;
+  --glass-bg: rgba(255, 255, 255, 0.58);
+  --glass-bg-strong: rgba(255, 255, 255, 0.76);
+  --glass-border: rgba(11, 21, 38, 0.08);
 }
 
 .dark {
-  --bg: #1b1712;
-  --bg-elevated: #241f18;
-  --bg-sunken: #150f0a;
-  --fg: #f5efe4;
-  --fg-muted: #b8ac98;
-  --fg-subtle: #8a7f6c;
-  --border: rgba(245, 239, 228, 0.12);
-  --border-strong: rgba(245, 239, 228, 0.2);
-  --accent: #e08a4e;
-  --accent-secondary: #4fa98a;
-  --accent-tertiary: #d9a441;
-  --accent-glow: rgba(224, 138, 78, 0.16);
-  --danger: #e57373;
-  --glass-bg: rgba(36, 31, 24, 0.5);
-  --glass-bg-strong: rgba(27, 23, 18, 0.72);
-  --glass-border: rgba(245, 239, 228, 0.1);
+  --bg: #070b16;
+  --bg-elevated: #0e1526;
+  --bg-sunken: #04060c;
+  --fg: #f3f5f9;
+  --fg-muted: #9aa5c0;
+  --fg-subtle: #737da0;
+  --border: rgba(243, 245, 249, 0.1);
+  --border-strong: rgba(243, 245, 249, 0.18);
+  --accent: #6084cc;
+  --accent-secondary: #7f96c2;
+  --accent-tertiary: #e3e7f1;
+  --accent-glow: rgba(86, 121, 196, 0.2);
+  --danger: #dd6a61;
+  --glass-bg: rgba(14, 21, 38, 0.55);
+  --glass-bg-strong: rgba(5, 8, 16, 0.76);
+  --glass-border: rgba(243, 245, 249, 0.1);
 }
 
 @theme inline {
