@@ -14,7 +14,12 @@ function createConnection() {
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not set.");
   }
-  return postgres(connectionString, { ssl: "require" });
+  // Neon's connection string is pooled (PgBouncer-style): the same logical connection can be
+  // routed to different physical backends between queries, so server-side prepared statements
+  // (postgres.js's default) can end up reused against a backend with a stale plan — surfacing as
+  // "cached plan must not change result type" any time a table's shape changes. Disabling
+  // server-side prepare avoids this class of bug entirely; the perf cost is negligible here.
+  return postgres(connectionString, { ssl: "require", prepare: false });
 }
 
 export const sql = global.__portfolioSql ?? createConnection();
