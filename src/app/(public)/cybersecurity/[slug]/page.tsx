@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
-import { Reveal } from "@/components/ui/motion";
+import { Reveal, Mirror } from "@/components/ui/motion";
 import { CyberRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,10 +26,12 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
 
       <Reveal>
         <Chip>{entry.category}</Chip>
-        <h1 className="mt-4 font-display text-3xl font-semibold text-fg sm:text-4xl">{entry.title}</h1>
+        <Mirror className="mt-4">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{entry.title}</h1>
+        </Mirror>
 
         {entry.image_url && (
-          <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-lg border border-border">
+          <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">
             <Image src={entry.image_url} alt={entry.title} fill sizes="(min-width: 768px) 720px, 100vw" className="object-cover" />
           </div>
         )}
@@ -48,14 +50,14 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
       {entry.logs_analysis && (
         <Reveal className="mt-10">
           <p className="font-mono text-xs uppercase tracking-wider text-accent-secondary">Log analysis</p>
-          <pre className="scrollbar-thin mt-3 overflow-x-auto rounded-lg border border-border bg-bg-sunken p-4 font-mono text-[13px] leading-relaxed text-fg whitespace-pre-wrap">
+          <pre className="scrollbar-thin mt-3 overflow-x-auto rounded-2xl border border-border bg-bg-sunken p-4 font-mono text-[13px] leading-relaxed text-fg whitespace-pre-wrap">
             {entry.logs_analysis}
           </pre>
         </Reveal>
       )}
 
       {entry.what_i_learned && (
-        <Reveal className="mt-8 rounded-lg border border-accent/25 bg-accent/[0.06] p-5">
+        <Reveal className="mt-8 rounded-2xl border border-accent/25 bg-accent/[0.06] p-5">
           <p className="font-mono text-xs uppercase tracking-wider text-accent">What I learned</p>
           <p className="mt-2 text-sm leading-relaxed text-fg">{entry.what_i_learned}</p>
         </Reveal>

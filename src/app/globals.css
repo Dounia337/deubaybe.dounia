@@ -77,11 +77,43 @@ body {
   color: var(--fg);
 }
 
-/* Soft ambient warmth used behind the hero + section headers, replacing the old grid texture */
+/* Soft ambient depth used behind the hero + every page header — two blurred blobs that drift
+   slowly, so the site feels alive without ever competing with the content in front of them. */
 .hero-wash {
-  background-image:
-    radial-gradient(55% 50% at 12% 15%, var(--accent-glow), transparent 70%),
-    radial-gradient(45% 40% at 88% 5%, color-mix(in srgb, var(--accent-secondary) 14%, transparent), transparent 70%);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero-wash::before,
+.hero-wash::after {
+  content: "";
+  position: absolute;
+  top: -12vmax;
+  z-index: -1;
+  width: 48vmax;
+  height: 48vmax;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.hero-wash::before {
+  left: -14vmax;
+  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+  animation: wash-drift-a 24s ease-in-out infinite alternate;
+}
+.hero-wash::after {
+  right: -14vmax;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-secondary) 18%, transparent), transparent 70%);
+  animation: wash-drift-b 28s ease-in-out infinite alternate;
+  animation-delay: -6s;
+}
+@keyframes wash-drift-a {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(6%, 10%) scale(1.15); }
+}
+@keyframes wash-drift-b {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-6%, 8%) scale(1.1); }
 }
 
 .text-gradient {
@@ -89,6 +121,26 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* A soft light passing left-to-right over the hero name, like a reflection crossing glass.
+   The base navy gradient is always fully present underneath, so legibility never dips —
+   the sweep only ever adds a brief highlight on top of it. */
+.text-shine {
+  background-image:
+    linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.85) 50%, transparent 65%),
+    linear-gradient(90deg, var(--accent), var(--accent-tertiary));
+  background-size: 250% 100%, 100% 100%;
+  background-position: -120% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shine-sweep 7s ease-in-out infinite;
+}
+@keyframes text-shine-sweep {
+  0%, 8% { background-position: -120% 0, 0 0; }
+  35%, 100% { background-position: 220% 0, 0 0; }
 }
 
 .glow-accent {

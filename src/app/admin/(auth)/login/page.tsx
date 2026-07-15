@@ -43,7 +43,7 @@ function LoginForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4">
-      <div className="hero-wash w-full max-w-sm rounded-lg border border-border-strong bg-bg-elevated p-8">
+      <div className="w-full max-w-sm rounded-lg border border-border-strong bg-bg-elevated p-8">
         <div className="mb-6 flex items-center gap-2">
           <TerminalSquare className="h-5 w-5 text-accent" />
           <span className="font-mono text-sm text-fg-muted">admin@system:~$</span>

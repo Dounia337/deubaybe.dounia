@@ -150,7 +150,7 @@ export function ProfileHero({
 
         <motion.div variants={item} className="mt-4">
           <Mirror>
-            <h1 className="text-gradient font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
+            <h1 className="text-shine font-display text-5xl font-semibold tracking-[-0.015em] drop-shadow-[0_0_36px_var(--accent-glow)] sm:text-6xl lg:text-7xl">
               {name}
             </h1>
           </Mirror>

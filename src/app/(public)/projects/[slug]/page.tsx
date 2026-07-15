@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { GitFork, ExternalLink } from "lucide-react";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
-import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
+import { Reveal, RevealGroup, RevealItem, Mirror } from "@/components/ui/motion";
 import { ProjectsRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -26,9 +26,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       />
 
       <Reveal>
-        <h1 className="font-display text-3xl font-semibold text-fg sm:text-4xl">{project.title}</h1>
+        <Mirror>
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{project.title}</h1>
+        </Mirror>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center gap-2">
           {stack.map((t) => (
             <Chip key={t}>{t}</Chip>
           ))}
@@ -58,7 +60,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {project.image_url && (
-          <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-lg border border-border">
+          <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">
             <Image src={project.image_url} alt={project.title} fill sizes="(min-width: 768px) 720px, 100vw" className="object-cover" />
           </div>
         )}
