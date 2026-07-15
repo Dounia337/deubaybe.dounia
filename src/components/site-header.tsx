@@ -171,7 +171,7 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
                         href={link.href}
                         className={cx(
                           "relative whitespace-nowrap rounded-full px-3 py-2 text-sm transition-colors",
-                          active ? "font-medium text-fg" : "text-fg-muted hover:text-fg"
+                          active ? "font-medium text-fg" : "text-fg-muted hover:bg-bg-sunken/50 hover:text-fg"
                         )}
                       >
                         {active && (

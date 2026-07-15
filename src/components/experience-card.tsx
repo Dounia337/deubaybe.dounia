@@ -30,7 +30,7 @@ export function ExperienceCard({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full flex-col gap-5 p-6 text-left sm:flex-row sm:items-center"
+        className="flex w-full cursor-pointer flex-col gap-5 p-6 text-left transition-colors duration-300 hover:bg-bg-sunken/40 sm:flex-row sm:items-center"
       >
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-bg-sunken sm:h-28 sm:w-28">
           {imageUrl ? (

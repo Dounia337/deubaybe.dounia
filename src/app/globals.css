@@ -163,6 +163,20 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
+/* Interactive glass form fields (contact inputs, etc.). .glass's own border is unlayered CSS,
+   so it always beats Tailwind's hover:/focus: utilities for the same property regardless of
+   specificity — these states have to live here instead of as classes on the element. */
+.glass-field {
+  transition: border-color 0.2s ease;
+}
+.glass-field:hover {
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--glass-border));
+}
+.glass-field:focus {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--glass-border));
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;

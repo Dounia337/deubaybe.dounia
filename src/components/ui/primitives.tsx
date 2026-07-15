@@ -23,7 +23,7 @@ export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: 
             {item.href && !isLast ? (
               <Link
                 href={item.href}
-                className="inline-flex items-center gap-1 text-fg-muted transition-colors hover:text-accent"
+                className="inline-flex items-center gap-1 text-fg-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
               >
                 {i === 0 && <HomeIcon className="h-3.5 w-3.5" />}
                 {item.label}

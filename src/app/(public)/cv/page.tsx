@@ -65,7 +65,13 @@ export default async function CVPage() {
               {links.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-4 border-t border-border pt-4">
                   {links.map((l) => (
-                    <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="text-sm text-accent hover:underline">
+                    <a
+                      key={l.url}
+                      href={l.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm text-accent underline-offset-4 transition-colors hover:text-accent-secondary hover:underline"
+                    >
                       {l.label}
                     </a>
                   ))}

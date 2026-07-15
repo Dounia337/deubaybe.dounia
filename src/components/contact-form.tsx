@@ -81,7 +81,7 @@ export function ContactForm() {
           name="name"
           required
           maxLength={200}
-          className="glass w-full rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none transition-colors focus:border-accent/40"
+          className="glass glass-field w-full rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none"
         />
       </div>
 
@@ -94,7 +94,7 @@ export function ContactForm() {
           name="email"
           type="email"
           required
-          className="glass w-full rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none transition-colors focus:border-accent/40"
+          className="glass glass-field w-full rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none"
         />
       </div>
 
@@ -108,7 +108,7 @@ export function ContactForm() {
           required
           rows={5}
           maxLength={5000}
-          className="glass w-full resize-none rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none transition-colors focus:border-accent/40"
+          className="glass glass-field w-full resize-none rounded-xl px-3.5 py-2.5 text-sm text-fg outline-none"
         />
       </div>
 

@@ -268,7 +268,7 @@ export function ProfileHero({
                       <Eyebrow>{activeFeatured.label}</Eyebrow>
                       <Link
                         href={activeFeatured.href}
-                        className="glass mx-auto mt-4 flex w-full max-w-xl flex-col overflow-hidden rounded-3xl text-left shadow-lg shadow-black/[0.06] transition-transform duration-300 hover:-translate-y-1 sm:flex-row sm:items-stretch"
+                        className="glass mx-auto mt-4 flex w-full max-w-xl flex-col overflow-hidden rounded-3xl text-left shadow-lg shadow-black/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/[0.12] sm:flex-row sm:items-stretch"
                       >
                         <div className="relative h-40 w-full shrink-0 sm:h-auto sm:w-44">
                           {activeFeatured.image_url ? (

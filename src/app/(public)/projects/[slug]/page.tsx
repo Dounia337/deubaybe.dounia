@@ -40,7 +40,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               href={project.github_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-all duration-200 hover:gap-2.5 hover:text-accent-secondary hover:underline"
             >
               <GitFork className="h-4 w-4" /> Source
             </a>
@@ -50,7 +50,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               href={project.demo_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-all duration-200 hover:gap-2.5 hover:text-accent-secondary hover:underline"
             >
               <ExternalLink className="h-4 w-4" /> Live demo
             </a>
