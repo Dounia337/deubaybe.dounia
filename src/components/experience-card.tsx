@@ -47,7 +47,7 @@ export function ExperienceCard({
             <span className="text-xs text-fg-subtle">{date}</span>
           </div>
           <Chip>{type}</Chip>
-          <p className={cx("mt-3 text-[15px] leading-relaxed text-fg-muted", !open && "line-clamp-2")}>
+          <p className={cx("mt-3 text-base leading-relaxed text-fg-muted", !open && "line-clamp-2")}>
             {description}
           </p>
         </div>
@@ -69,7 +69,7 @@ export function ExperienceCard({
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="border-t border-border px-6 pb-6 pt-4 text-sm text-fg">
+            <p className="border-t border-border px-6 pb-6 pt-4 text-base leading-relaxed text-fg">
               <span className="font-mono text-xs uppercase tracking-wider text-accent">Key takeaway — </span>
               {keyTakeaway}
             </p>

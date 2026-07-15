@@ -63,26 +63,26 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           </div>
         )}
 
-        <p className="mt-8 text-[15px] leading-relaxed text-fg-muted">{project.description}</p>
+        <p className="mt-8 text-base leading-relaxed text-fg-muted">{project.description}</p>
       </Reveal>
 
-      <RevealGroup className="mt-10 grid gap-6 border-t border-border pt-8 sm:grid-cols-3">
+      <RevealGroup className="mt-10 grid gap-8 border-t border-border pt-8 sm:grid-cols-3">
         {project.problem && (
           <RevealItem>
-            <p className="font-mono text-xs uppercase tracking-wider text-accent-tertiary">Problem</p>
-            <p className="mt-2 text-sm leading-relaxed text-fg">{project.problem}</p>
+            <p className="font-display text-xl font-semibold tracking-tight text-accent-tertiary">Problem</p>
+            <p className="mt-3 text-base leading-relaxed text-fg">{project.problem}</p>
           </RevealItem>
         )}
         {project.solution && (
           <RevealItem>
-            <p className="font-mono text-xs uppercase tracking-wider text-accent-secondary">Solution</p>
-            <p className="mt-2 text-sm leading-relaxed text-fg">{project.solution}</p>
+            <p className="font-display text-xl font-semibold tracking-tight text-accent-secondary">Solution</p>
+            <p className="mt-3 text-base leading-relaxed text-fg">{project.solution}</p>
           </RevealItem>
         )}
         {project.impact && (
           <RevealItem>
-            <p className="font-mono text-xs uppercase tracking-wider text-accent">Impact</p>
-            <p className="mt-2 text-sm leading-relaxed text-fg">{project.impact}</p>
+            <p className="font-display text-xl font-semibold tracking-tight text-accent">Impact</p>
+            <p className="mt-3 text-base leading-relaxed text-fg">{project.impact}</p>
           </RevealItem>
         )}
       </RevealGroup>

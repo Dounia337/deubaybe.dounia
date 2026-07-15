@@ -34,7 +34,7 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
           </div>
         )}
 
-        <p className="mt-6 text-[15px] leading-relaxed text-fg-muted">{entry.description}</p>
+        <p className="mt-6 text-base leading-relaxed text-fg-muted">{entry.description}</p>
 
         {tools.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-1.5">
@@ -47,7 +47,7 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
 
       {entry.logs_analysis && (
         <Reveal className="mt-10">
-          <p className="font-mono text-xs uppercase tracking-wider text-accent-secondary">Log analysis</p>
+          <p className="font-display text-xl font-semibold tracking-tight text-accent-secondary">Log analysis</p>
           <pre className="scrollbar-thin mt-3 overflow-x-auto rounded-2xl border border-border bg-bg-sunken p-4 font-mono text-[13px] leading-relaxed text-fg whitespace-pre-wrap">
             {entry.logs_analysis}
           </pre>
@@ -56,8 +56,8 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
 
       {entry.what_i_learned && (
         <Reveal className="mt-8 rounded-2xl border border-accent/25 bg-accent/[0.06] p-5">
-          <p className="font-mono text-xs uppercase tracking-wider text-accent">What I learned</p>
-          <p className="mt-2 text-sm leading-relaxed text-fg">{entry.what_i_learned}</p>
+          <p className="font-display text-xl font-semibold tracking-tight text-accent">What I learned</p>
+          <p className="mt-3 text-base leading-relaxed text-fg">{entry.what_i_learned}</p>
         </Reveal>
       )}
     </Section>

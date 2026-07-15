@@ -41,7 +41,7 @@ export default async function ReflectionDetailPage({ params }: { params: Promise
           </div>
         )}
 
-        <div className="mt-8 space-y-4 text-[15px] leading-relaxed text-fg-muted">
+        <div className="mt-8 space-y-5 text-base leading-relaxed text-fg-muted">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}

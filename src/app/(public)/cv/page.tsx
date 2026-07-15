@@ -61,7 +61,7 @@ export default async function CVPage() {
         {profile.summary && (
           <Reveal>
             <Card className="mb-8">
-              <p className="text-[15px] leading-relaxed text-fg-muted">{profile.summary}</p>
+              <p className="text-base leading-relaxed text-fg-muted">{profile.summary}</p>
               {links.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-4 border-t border-border pt-4">
                   {links.map((l) => (
@@ -77,7 +77,7 @@ export default async function CVPage() {
 
         {education.length > 0 && (
           <Reveal className="mb-10">
-            <h2 className="mb-4 font-display text-xl font-semibold text-fg">Education</h2>
+            <h2 className="mb-4 font-display text-xl font-semibold tracking-tight text-fg">Education</h2>
             <div className="space-y-3">
               {education.map((e) => (
                 <Card key={e.id}>
@@ -93,7 +93,7 @@ export default async function CVPage() {
                       {formatMonthYear(e.start_date)} – {formatMonthYear(e.end_date)}
                     </span>
                   </div>
-                  {e.description && <p className="mt-2 text-sm text-fg-muted">{e.description}</p>}
+                  {e.description && <p className="mt-2 text-base leading-relaxed text-fg-muted">{e.description}</p>}
                 </Card>
               ))}
             </div>
@@ -102,7 +102,7 @@ export default async function CVPage() {
 
         {experience.length > 0 && (
           <Reveal className="mb-10">
-            <h2 className="mb-4 font-display text-xl font-semibold text-fg">Experience</h2>
+            <h2 className="mb-4 font-display text-xl font-semibold tracking-tight text-fg">Experience</h2>
             <div className="space-y-3">
               {experience.map((e) => (
                 <Card key={e.id}>
@@ -115,7 +115,7 @@ export default async function CVPage() {
                       {formatMonthYear(e.start_date)} – {formatMonthYear(e.end_date)}
                     </span>
                   </div>
-                  {e.description && <p className="mt-2 text-sm text-fg-muted">{e.description}</p>}
+                  {e.description && <p className="mt-2 text-base leading-relaxed text-fg-muted">{e.description}</p>}
                 </Card>
               ))}
             </div>
@@ -124,7 +124,7 @@ export default async function CVPage() {
 
         {leadership.length > 0 && (
           <Reveal className="mb-10">
-            <h2 className="mb-4 font-display text-xl font-semibold text-fg">Leadership</h2>
+            <h2 className="mb-4 font-display text-xl font-semibold tracking-tight text-fg">Leadership</h2>
             <div className="space-y-3">
               {leadership.map((e) => (
                 <Card key={e.id}>
@@ -137,7 +137,7 @@ export default async function CVPage() {
                       {formatMonthYear(e.start_date)} – {formatMonthYear(e.end_date)}
                     </span>
                   </div>
-                  {e.description && <p className="mt-2 text-sm text-fg-muted">{e.description}</p>}
+                  {e.description && <p className="mt-2 text-base leading-relaxed text-fg-muted">{e.description}</p>}
                 </Card>
               ))}
             </div>
@@ -146,7 +146,7 @@ export default async function CVPage() {
 
         {skills.length > 0 && (
           <Reveal>
-            <h2 className="mb-4 font-display text-xl font-semibold text-fg">Skills</h2>
+            <h2 className="mb-4 font-display text-xl font-semibold tracking-tight text-fg">Skills</h2>
             <div className="space-y-4">
               {Object.entries(skillsByCategory).map(([category, items]) => (
                 <div key={category}>
