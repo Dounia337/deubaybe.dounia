@@ -255,7 +255,7 @@ export function Button({
   className?: string;
 }) {
   const styles = cx(
-    "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100",
+    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.97] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100",
     variant === "primary" && "bg-accent text-bg-sunken shadow-sm shadow-accent/20 hover:opacity-90 hover:shadow-md hover:shadow-accent/25",
     variant === "secondary" && "glass text-fg hover:border-accent/40 hover:text-accent",
     variant === "ghost" && "text-fg-muted hover:bg-bg-sunken/60 hover:text-fg",

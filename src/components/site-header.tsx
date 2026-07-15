@@ -141,7 +141,7 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
             onClick={handleToggle}
             aria-expanded={expanded}
             aria-label={expanded ? "Close navigation" : "Open navigation"}
-            className="shrink-0 rounded-full"
+            className="shrink-0 cursor-pointer rounded-full"
           >
             <Avatar
               src={photoUrl}
@@ -191,7 +191,7 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
                   <button
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                     aria-label="Toggle color theme"
-                    className="relative shrink-0 overflow-hidden rounded-full p-2 text-fg-muted transition-colors hover:bg-bg-sunken/60 hover:text-accent"
+                    className="relative shrink-0 cursor-pointer overflow-hidden rounded-full p-2 text-fg-muted transition-colors hover:bg-bg-sunken/60 hover:text-accent"
                   >
                     <AnimatePresence mode="wait" initial={false}>
                       {theme === "dark" ? (
