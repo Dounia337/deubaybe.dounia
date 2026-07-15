@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { ExperiencesRepo } from "@/db/repo";
+import { requireAdmin, getSession } from "@/lib/session";
+import { handleApiError } from "@/lib/api-helpers";
+
+const schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  type: z.enum(["Training", "Conference", "Leadership", "Convening", "Workshop"]).default("Training"),
+  event_date: z.string().min(1, "Date is required"),
+  description: z.string().min(1, "Description is required"),
+  key_takeaway: z.string().optional(),
+  image_url: z.string().optional(),
+  published: z.boolean().default(true),
+  order_index: z.number().default(0),
+});
+
+export async function GET(req: NextRequest) {
+  try {
+    const isAdminRequest = req.nextUrl.searchParams.get("all") === "1";
+    let publishedOnly = true;
+    if (isAdminRequest) {
+      const session = await getSession();
+      publishedOnly = !session;
+    }
+    return NextResponse.json({ experiences: await ExperiencesRepo.all(publishedOnly) });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    await requireAdmin();
+    const data = schema.parse(await req.json());
+    const experience = await ExperiencesRepo.create({ ...data, published: data.published ? 1 : 0 });
+    return NextResponse.json({ experience }, { status: 201 });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}

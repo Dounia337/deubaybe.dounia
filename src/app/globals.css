@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #faf7f2;
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f0eae0;
+  --fg: #201b14;
+  --fg-muted: #6b6154;
+  --fg-subtle: #9c917f;
+  --border: rgba(32, 27, 20, 0.1);
+  --border-strong: rgba(32, 27, 20, 0.18);
+  --accent: #c1622d;
+  --accent-secondary: #2f6e5c;
+  --accent-tertiary: #b7791f;
+  --accent-glow: rgba(193, 98, 45, 0.18);
+  --danger: #c0392b;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(32, 27, 20, 0.08);
+}
+
+.dark {
+  --bg: #1b1712;
+  --bg-elevated: #241f18;
+  --bg-sunken: #150f0a;
+  --fg: #f5efe4;
+  --fg-muted: #b8ac98;
+  --fg-subtle: #8a7f6c;
+  --border: rgba(245, 239, 228, 0.12);
+  --border-strong: rgba(245, 239, 228, 0.2);
+  --accent: #e08a4e;
+  --accent-secondary: #4fa98a;
+  --accent-tertiary: #d9a441;
+  --accent-glow: rgba(224, 138, 78, 0.16);
+  --danger: #e57373;
+  --glass-bg: rgba(36, 31, 24, 0.5);
+  --glass-bg-strong: rgba(27, 23, 18, 0.72);
+  --glass-border: rgba(245, 239, 228, 0.1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-tertiary: var(--accent-tertiary);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "Fira Code", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--accent-glow);
+  color: var(--fg);
+}
+
+/* Soft ambient warmth used behind the hero + section headers, replacing the old grid texture */
+.hero-wash {
+  background-image:
+    radial-gradient(55% 50% at 12% 15%, var(--accent-glow), transparent 70%),
+    radial-gradient(45% 40% at 88% 5%, color-mix(in srgb, var(--accent-secondary) 14%, transparent), transparent 70%);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent), var(--accent-tertiary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-accent {
+  box-shadow: 0 0 0 1px var(--accent-glow), 0 0 24px var(--accent-glow);
+}
+
+/* iOS-style frosted glass surface: blurred + saturated backdrop, hairline border. */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Higher-opacity variant for surfaces that sit over scrolling content (nav, sticky bars). */
+.glass-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1.5px var(--accent), 0 0 0 5px var(--accent-glow);
+  transition: box-shadow 0.15s ease-out;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
