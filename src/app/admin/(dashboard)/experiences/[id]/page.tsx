@@ -20,6 +20,7 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
             description: experience.description,
             key_takeaway: experience.key_takeaway || "",
             image_url: experience.image_url || "",
+            featured: !!experience.featured,
             published: !!experience.published,
           }}
         />

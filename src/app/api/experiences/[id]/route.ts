@@ -11,6 +11,7 @@ const schema = z.object({
   description: z.string().min(1),
   key_takeaway: z.string().optional(),
   image_url: z.string().optional(),
+  featured: z.boolean().default(false),
   published: z.boolean().default(true),
   order_index: z.number().default(0),
 });
@@ -33,6 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const data = schema.partial().parse(await req.json());
     const experience = await ExperiencesRepo.update(Number(id), {
       ...data,
+      featured: data.featured === undefined ? undefined : data.featured ? 1 : 0,
       published: data.published === undefined ? undefined : data.published ? 1 : 0,
     });
     if (!experience) return NextResponse.json({ error: "Not found" }, { status: 404 });

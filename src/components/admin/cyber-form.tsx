@@ -15,6 +15,7 @@ export type CyberFormValues = {
   logs_analysis: string;
   what_i_learned: string;
   image_url: string;
+  featured: boolean;
   published: boolean;
 };
 
@@ -26,6 +27,7 @@ const EMPTY: CyberFormValues = {
   logs_analysis: "",
   what_i_learned: "",
   image_url: "",
+  featured: false,
   published: true,
 };
 
@@ -109,7 +111,10 @@ export function CyberForm({ initial, entryId }: { initial?: Partial<CyberFormVal
         hint="Shown on the cyber lab card and detail page."
       />
 
-      <Toggle checked={values.published} onChange={(v) => set("published", v)} label="Published" />
+      <div className="flex gap-6">
+        <Toggle checked={values.featured} onChange={(v) => set("featured", v)} label="Featured" />
+        <Toggle checked={values.published} onChange={(v) => set("published", v)} label="Published" />
+      </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 

@@ -38,11 +38,13 @@ CREATE TABLE IF NOT EXISTS cyber_entries (
   logs_analysis TEXT,
   what_i_learned TEXT,
   image_url TEXT,
+  featured INTEGER NOT NULL DEFAULT 0,
   published INTEGER NOT NULL DEFAULT 1,
   order_index INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT now()::text,
   updated_at TEXT NOT NULL DEFAULT now()::text
 );
+ALTER TABLE cyber_entries ADD COLUMN IF NOT EXISTS featured INTEGER NOT NULL DEFAULT 0;
 
 -- Experiences / trainings / convenings
 CREATE TABLE IF NOT EXISTS experiences (
@@ -53,11 +55,13 @@ CREATE TABLE IF NOT EXISTS experiences (
   description TEXT NOT NULL,
   key_takeaway TEXT,
   image_url TEXT,
+  featured INTEGER NOT NULL DEFAULT 0,
   published INTEGER NOT NULL DEFAULT 1,
   order_index INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT now()::text,
   updated_at TEXT NOT NULL DEFAULT now()::text
 );
+ALTER TABLE experiences ADD COLUMN IF NOT EXISTS featured INTEGER NOT NULL DEFAULT 0;
 
 -- Reflections (blog-style posts)
 CREATE TABLE IF NOT EXISTS reflections (
@@ -67,11 +71,13 @@ CREATE TABLE IF NOT EXISTS reflections (
   content TEXT NOT NULL,
   tags TEXT NOT NULL DEFAULT '[]',
   image_url TEXT,
+  featured INTEGER NOT NULL DEFAULT 0,
   published INTEGER NOT NULL DEFAULT 1,
   post_date TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT now()::text,
   updated_at TEXT NOT NULL DEFAULT now()::text
 );
+ALTER TABLE reflections ADD COLUMN IF NOT EXISTS featured INTEGER NOT NULL DEFAULT 0;
 
 -- Contact messages
 CREATE TABLE IF NOT EXISTS messages (

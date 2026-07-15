@@ -32,6 +32,7 @@ export default async function AdminExperiencesPage() {
                   <th className="px-4 py-3 font-medium">Type</th>
                   <th className="px-4 py-3 font-medium">Date</th>
                   <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Featured</th>
                   <th className="px-4 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -44,6 +45,7 @@ export default async function AdminExperiencesPage() {
                     <td className="px-4 py-3">
                       <PublishToggleClient apiPath={`/api/experiences/${e.id}`} published={!!e.published} />
                     </td>
+                    <td className="px-4 py-3 text-fg-muted">{e.featured ? "Yes" : "—"}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end">
                         <AdminRowActions

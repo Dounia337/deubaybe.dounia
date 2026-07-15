@@ -11,6 +11,7 @@ const schema = z.object({
   description: z.string().min(1, "Description is required"),
   key_takeaway: z.string().optional(),
   image_url: z.string().optional(),
+  featured: z.boolean().default(false),
   published: z.boolean().default(true),
   order_index: z.number().default(0),
 });
@@ -33,7 +34,11 @@ export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
     const data = schema.parse(await req.json());
-    const experience = await ExperiencesRepo.create({ ...data, published: data.published ? 1 : 0 });
+    const experience = await ExperiencesRepo.create({
+      ...data,
+      featured: data.featured ? 1 : 0,
+      published: data.published ? 1 : 0,
+    });
     return NextResponse.json({ experience }, { status: 201 });
   } catch (err) {
     return handleApiError(err);

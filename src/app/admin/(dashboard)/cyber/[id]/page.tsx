@@ -21,6 +21,7 @@ export default async function EditCyberEntryPage({ params }: { params: Promise<{
             logs_analysis: entry.logs_analysis || "",
             what_i_learned: entry.what_i_learned || "",
             image_url: entry.image_url ?? "",
+            featured: !!entry.featured,
             published: !!entry.published,
           }}
         />

@@ -31,6 +31,7 @@ export default async function AdminCyberPage() {
                   <th className="px-4 py-3 font-medium">Title</th>
                   <th className="px-4 py-3 font-medium">Category</th>
                   <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Featured</th>
                   <th className="px-4 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -46,6 +47,7 @@ export default async function AdminCyberPage() {
                     <td className="px-4 py-3">
                       <PublishToggleClient apiPath={`/api/cyber/${c.id}`} published={!!c.published} />
                     </td>
+                    <td className="px-4 py-3 text-fg-muted">{c.featured ? "Yes" : "—"}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end">
                         <AdminRowActions editHref={`/admin/cyber/${c.id}`} apiPath={`/api/cyber/${c.id}`} />

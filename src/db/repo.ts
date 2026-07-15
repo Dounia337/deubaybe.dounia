@@ -31,6 +31,7 @@ export type CyberEntry = {
   logs_analysis: string | null;
   what_i_learned: string | null;
   image_url: string | null;
+  featured: number;
   published: number;
   order_index: number;
   created_at: string;
@@ -45,6 +46,7 @@ export type Experience = {
   description: string;
   key_takeaway: string | null;
   image_url: string | null;
+  featured: number;
   published: number;
   order_index: number;
   created_at: string;
@@ -58,6 +60,7 @@ export type Reflection = {
   content: string;
   tags: string; // JSON array
   image_url: string | null;
+  featured: number;
   published: number;
   post_date: string;
   created_at: string;
@@ -229,8 +232,8 @@ export const CyberRepo = {
   async create(data: Partial<CyberEntry>): Promise<CyberEntry> {
     const slug = await uniqueSlug("cyber_entries", data.slug || data.title || "entry");
     const rows = await sql<CyberEntry[]>`
-      INSERT INTO cyber_entries (slug, title, description, category, tools_used, logs_analysis, what_i_learned, image_url, published, order_index, updated_at)
-      VALUES (${slug}, ${data.title || "Untitled entry"}, ${data.description || ""}, ${data.category || "Blue Team"}, ${data.tools_used ?? "[]"}, ${data.logs_analysis ?? null}, ${data.what_i_learned ?? null}, ${data.image_url ?? null}, ${data.published ?? 1}, ${data.order_index ?? 0}, now()::text)
+      INSERT INTO cyber_entries (slug, title, description, category, tools_used, logs_analysis, what_i_learned, image_url, featured, published, order_index, updated_at)
+      VALUES (${slug}, ${data.title || "Untitled entry"}, ${data.description || ""}, ${data.category || "Blue Team"}, ${data.tools_used ?? "[]"}, ${data.logs_analysis ?? null}, ${data.what_i_learned ?? null}, ${data.image_url ?? null}, ${data.featured ?? 0}, ${data.published ?? 1}, ${data.order_index ?? 0}, now()::text)
       RETURNING *
     `;
     return rows[0];
@@ -247,7 +250,8 @@ export const CyberRepo = {
         slug = ${slug}, title = ${data.title ?? existing.title}, description = ${data.description ?? existing.description},
         category = ${data.category ?? existing.category}, tools_used = ${data.tools_used ?? existing.tools_used},
         logs_analysis = ${data.logs_analysis ?? existing.logs_analysis}, what_i_learned = ${data.what_i_learned ?? existing.what_i_learned},
-        image_url = ${data.image_url ?? existing.image_url}, published = ${data.published ?? existing.published},
+        image_url = ${data.image_url ?? existing.image_url}, featured = ${data.featured ?? existing.featured},
+        published = ${data.published ?? existing.published},
         order_index = ${data.order_index ?? existing.order_index}, updated_at = now()::text
       WHERE id = ${id}
       RETURNING *
@@ -273,8 +277,8 @@ export const ExperiencesRepo = {
   },
   async create(data: Partial<Experience>): Promise<Experience> {
     const rows = await sql<Experience[]>`
-      INSERT INTO experiences (title, type, event_date, description, key_takeaway, image_url, published, order_index, updated_at)
-      VALUES (${data.title || "Untitled experience"}, ${data.type || "Training"}, ${data.event_date || new Date().toISOString().slice(0, 10)}, ${data.description || ""}, ${data.key_takeaway ?? null}, ${data.image_url ?? null}, ${data.published ?? 1}, ${data.order_index ?? 0}, now()::text)
+      INSERT INTO experiences (title, type, event_date, description, key_takeaway, image_url, featured, published, order_index, updated_at)
+      VALUES (${data.title || "Untitled experience"}, ${data.type || "Training"}, ${data.event_date || new Date().toISOString().slice(0, 10)}, ${data.description || ""}, ${data.key_takeaway ?? null}, ${data.image_url ?? null}, ${data.featured ?? 0}, ${data.published ?? 1}, ${data.order_index ?? 0}, now()::text)
       RETURNING *
     `;
     return rows[0];
@@ -286,7 +290,8 @@ export const ExperiencesRepo = {
       UPDATE experiences SET
         title = ${data.title ?? existing.title}, type = ${data.type ?? existing.type}, event_date = ${data.event_date ?? existing.event_date},
         description = ${data.description ?? existing.description}, key_takeaway = ${data.key_takeaway ?? existing.key_takeaway},
-        image_url = ${data.image_url ?? existing.image_url}, published = ${data.published ?? existing.published},
+        image_url = ${data.image_url ?? existing.image_url}, featured = ${data.featured ?? existing.featured},
+        published = ${data.published ?? existing.published},
         order_index = ${data.order_index ?? existing.order_index}, updated_at = now()::text
       WHERE id = ${id}
       RETURNING *
@@ -317,8 +322,8 @@ export const ReflectionsRepo = {
   async create(data: Partial<Reflection>): Promise<Reflection> {
     const slug = await uniqueSlug("reflections", data.slug || data.title || "reflection");
     const rows = await sql<Reflection[]>`
-      INSERT INTO reflections (slug, title, content, tags, image_url, published, post_date, updated_at)
-      VALUES (${slug}, ${data.title || "Untitled reflection"}, ${data.content || ""}, ${data.tags ?? "[]"}, ${data.image_url ?? null}, ${data.published ?? 1}, ${data.post_date || new Date().toISOString().slice(0, 10)}, now()::text)
+      INSERT INTO reflections (slug, title, content, tags, image_url, featured, published, post_date, updated_at)
+      VALUES (${slug}, ${data.title || "Untitled reflection"}, ${data.content || ""}, ${data.tags ?? "[]"}, ${data.image_url ?? null}, ${data.featured ?? 0}, ${data.published ?? 1}, ${data.post_date || new Date().toISOString().slice(0, 10)}, now()::text)
       RETURNING *
     `;
     return rows[0];
@@ -334,6 +339,7 @@ export const ReflectionsRepo = {
       UPDATE reflections SET
         slug = ${slug}, title = ${data.title ?? existing.title}, content = ${data.content ?? existing.content},
         tags = ${data.tags ?? existing.tags}, image_url = ${data.image_url ?? existing.image_url},
+        featured = ${data.featured ?? existing.featured},
         published = ${data.published ?? existing.published}, post_date = ${data.post_date ?? existing.post_date}, updated_at = now()::text
       WHERE id = ${id}
       RETURNING *
@@ -487,6 +493,73 @@ export const SocialLinksRepo = {
       RETURNING *
     `;
     return rows[0];
+  },
+};
+
+// ---------- Featured content (hero spotlight) ----------
+
+export type FeaturedKind = "project" | "cyber" | "experience" | "reflection";
+
+export type FeaturedItem = {
+  kind: FeaturedKind;
+  label: string;
+  title: string;
+  description: string;
+  image_url: string | null;
+  href: string;
+};
+
+const FEATURED_LABELS: Record<FeaturedKind, string> = {
+  project: "Featured Project",
+  cyber: "Featured Cyber Lab",
+  experience: "Featured Training",
+  reflection: "Featured Reflection",
+};
+
+export const FeaturedRepo = {
+  /** Every published item marked featured, across all four content types, normalized into one shape for the hero slider. */
+  async all(): Promise<FeaturedItem[]> {
+    const [projects, cyber, experiences, reflections] = await Promise.all([
+      sql<Project[]>`SELECT * FROM projects WHERE featured = 1 AND published = 1 ORDER BY order_index ASC, created_at DESC`,
+      sql<CyberEntry[]>`SELECT * FROM cyber_entries WHERE featured = 1 AND published = 1 ORDER BY order_index ASC, created_at DESC`,
+      sql<Experience[]>`SELECT * FROM experiences WHERE featured = 1 AND published = 1 ORDER BY event_date DESC`,
+      sql<Reflection[]>`SELECT * FROM reflections WHERE featured = 1 AND published = 1 ORDER BY post_date DESC`,
+    ]);
+
+    return [
+      ...projects.map((p): FeaturedItem => ({
+        kind: "project",
+        label: FEATURED_LABELS.project,
+        title: p.title,
+        description: p.description,
+        image_url: p.image_url,
+        href: `/projects/${p.slug}`,
+      })),
+      ...cyber.map((c): FeaturedItem => ({
+        kind: "cyber",
+        label: FEATURED_LABELS.cyber,
+        title: c.title,
+        description: c.description,
+        image_url: c.image_url,
+        href: `/cybersecurity/${c.slug}`,
+      })),
+      ...experiences.map((e): FeaturedItem => ({
+        kind: "experience",
+        label: FEATURED_LABELS.experience,
+        title: e.title,
+        description: e.description,
+        image_url: e.image_url,
+        href: "/experiences",
+      })),
+      ...reflections.map((r): FeaturedItem => ({
+        kind: "reflection",
+        label: FEATURED_LABELS.reflection,
+        title: r.title,
+        description: r.content,
+        image_url: r.image_url,
+        href: `/reflections/${r.slug}`,
+      })),
+    ];
   },
 };
 

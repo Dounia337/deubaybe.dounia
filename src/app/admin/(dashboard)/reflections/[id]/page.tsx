@@ -19,6 +19,7 @@ export default async function EditReflectionPage({ params }: { params: Promise<{
             tags: JSON.parse(reflection.tags || "[]"),
             image_url: reflection.image_url ?? "",
             post_date: reflection.post_date,
+            featured: !!reflection.featured,
             published: !!reflection.published,
           }}
         />

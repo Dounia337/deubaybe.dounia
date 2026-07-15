@@ -12,6 +12,7 @@ const schema = z.object({
   logs_analysis: z.string().optional(),
   what_i_learned: z.string().optional(),
   image_url: z.string().nullable().optional(),
+  featured: z.boolean().default(false),
   published: z.boolean().default(true),
   order_index: z.number().default(0),
 });
@@ -35,6 +36,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const entry = await CyberRepo.update(Number(id), {
       ...data,
       tools_used: data.tools_used ? JSON.stringify(data.tools_used) : undefined,
+      featured: data.featured === undefined ? undefined : data.featured ? 1 : 0,
       published: data.published === undefined ? undefined : data.published ? 1 : 0,
     });
     if (!entry) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -13,6 +13,7 @@ export type ReflectionFormValues = {
   tags: string[];
   image_url: string;
   post_date: string;
+  featured: boolean;
   published: boolean;
 };
 
@@ -22,6 +23,7 @@ const EMPTY: ReflectionFormValues = {
   tags: [],
   image_url: "",
   post_date: new Date().toISOString().slice(0, 10),
+  featured: false,
   published: true,
 };
 
@@ -86,7 +88,10 @@ export function ReflectionForm({
         <TextArea rows={12} value={values.content} onChange={(e) => set("content", e.target.value)} required />
       </Field>
 
-      <Toggle checked={values.published} onChange={(v) => set("published", v)} label="Published" />
+      <div className="flex gap-6">
+        <Toggle checked={values.featured} onChange={(v) => set("featured", v)} label="Featured" />
+        <Toggle checked={values.published} onChange={(v) => set("published", v)} label="Published" />
+      </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 

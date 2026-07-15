@@ -9,6 +9,7 @@ const schema = z.object({
   content: z.string().min(1),
   tags: z.array(z.string()).default([]),
   image_url: z.string().nullable().optional(),
+  featured: z.boolean().default(false),
   published: z.boolean().default(true),
   post_date: z.string().min(1),
 });
@@ -32,6 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const reflection = await ReflectionsRepo.update(Number(id), {
       ...data,
       tags: data.tags ? JSON.stringify(data.tags) : undefined,
+      featured: data.featured === undefined ? undefined : data.featured ? 1 : 0,
       published: data.published === undefined ? undefined : data.published ? 1 : 0,
     });
     if (!reflection) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -9,6 +9,7 @@ const schema = z.object({
   content: z.string().min(1, "Content is required"),
   tags: z.array(z.string()).default([]),
   image_url: z.string().nullable().optional(),
+  featured: z.boolean().default(false),
   published: z.boolean().default(true),
   post_date: z.string().min(1, "Date is required"),
 });
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     const reflection = await ReflectionsRepo.create({
       ...data,
       tags: JSON.stringify(data.tags),
+      featured: data.featured ? 1 : 0,
       published: data.published ? 1 : 0,
     });
     return NextResponse.json({ reflection }, { status: 201 });
