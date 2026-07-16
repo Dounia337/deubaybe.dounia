@@ -10,13 +10,13 @@ const projectSchema = z.object({
   problem: z.string().optional(),
   solution: z.string().optional(),
   impact: z.string().optional(),
-  tech_stack: z.array(z.string()).default([]),
+  tech_stack: z.array(z.string()).optional(),
   image_url: z.string().optional(),
   github_url: z.string().optional(),
   demo_url: z.string().optional(),
-  featured: z.boolean().default(false),
-  published: z.boolean().default(true),
-  order_index: z.number().default(0),
+  featured: z.boolean().optional(),
+  published: z.boolean().optional(),
+  order_index: z.number().optional(),
 });
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

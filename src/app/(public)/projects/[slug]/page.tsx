@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { GitFork, ExternalLink } from "lucide-react";
-import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
+import { ExternalLink } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
+import { Section, Chip, Breadcrumbs, Button } from "@/components/ui/primitives";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
 import { ProjectsRepo } from "@/db/repo";
 
@@ -34,26 +35,16 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           ))}
         </div>
 
-        <div className="mt-5 flex gap-4">
+        <div className="mt-5 flex flex-wrap gap-3">
           {project.github_url && (
-            <a
-              href={project.github_url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-all duration-200 hover:gap-2.5 hover:text-accent-secondary hover:underline"
-            >
-              <GitFork className="h-4 w-4" /> Source
-            </a>
+            <Button href={project.github_url} external variant="secondary">
+              <FaGithub className="h-4 w-4" /> View source
+            </Button>
           )}
           {project.demo_url && (
-            <a
-              href={project.demo_url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-accent underline-offset-4 transition-all duration-200 hover:gap-2.5 hover:text-accent-secondary hover:underline"
-            >
+            <Button href={project.demo_url} external variant="primary">
               <ExternalLink className="h-4 w-4" /> Live demo
-            </a>
+            </Button>
           )}
         </div>
 

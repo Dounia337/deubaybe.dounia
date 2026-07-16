@@ -1,6 +1,5 @@
-import { FolderGit2 } from "lucide-react";
-import { PageHeader, Section, OverlayCard, EmptyState } from "@/components/ui/primitives";
-import { RevealGroup, RevealItem } from "@/components/ui/motion";
+import { PageHeader, Section, EmptyState } from "@/components/ui/primitives";
+import { ProjectsExplorer } from "@/components/projects-explorer";
 import { ProjectsRepo } from "@/db/repo";
 
 export const metadata = { title: "Projects" };
@@ -20,20 +19,7 @@ export default async function ProjectsPage() {
         {projects.length === 0 ? (
           <EmptyState title="No projects published yet" description="Check back soon." />
         ) : (
-          <RevealGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p) => (
-              <RevealItem key={p.id}>
-                <OverlayCard
-                  href={`/projects/${p.slug}`}
-                  src={p.image_url}
-                  alt={p.title}
-                  icon={<FolderGit2 />}
-                  title={p.title}
-                  tags={JSON.parse(p.tech_stack || "[]") as string[]}
-                />
-              </RevealItem>
-            ))}
-          </RevealGroup>
+          <ProjectsExplorer projects={projects} />
         )}
       </Section>
     </>

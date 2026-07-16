@@ -144,8 +144,13 @@ CREATE TABLE IF NOT EXISTS cv_leadership (
 -- Social media links shown as icon buttons in the hero (fixed set of platforms, admin-managed)
 CREATE TABLE IF NOT EXISTS social_links (
   id SERIAL PRIMARY KEY,
-  platform TEXT UNIQUE NOT NULL CHECK (platform IN ('linkedin', 'instagram', 'facebook', 'youtube')),
+  platform TEXT UNIQUE NOT NULL CHECK (platform IN ('github', 'linkedin', 'instagram', 'facebook', 'youtube')),
   url TEXT NOT NULL DEFAULT '',
   visible INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT now()::text
 );
+-- CREATE TABLE ... CHECK only applies on first creation; widen the constraint on tables that
+-- already existed before "github" was added as a platform.
+ALTER TABLE social_links DROP CONSTRAINT IF EXISTS social_links_platform_check;
+ALTER TABLE social_links ADD CONSTRAINT social_links_platform_check
+  CHECK (platform IN ('github', 'linkedin', 'instagram', 'facebook', 'youtube'));

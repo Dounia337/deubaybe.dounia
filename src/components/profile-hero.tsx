@@ -12,13 +12,14 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Download, Sparkles } from "lucide-react";
-import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
+import { ArrowRight, ArrowUpRight, Download, RotateCcw, Sparkles } from "lucide-react";
+import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube, FaGithub } from "react-icons/fa6";
 import { Avatar, Button, Eyebrow } from "@/components/ui/primitives";
 import { HELLO_DURATION, I_DURATION, AM_DURATION } from "@/lib/hero-timing";
 import type { FeaturedItem, SocialPlatform } from "@/db/repo";
 
 const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
+  github: FaGithub,
   linkedin: FaLinkedin,
   instagram: FaInstagram,
   facebook: FaFacebook,
@@ -26,6 +27,7 @@ const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: str
 };
 
 const SOCIAL_LABELS: Record<SocialPlatform, string> = {
+  github: "GitHub",
   linkedin: "LinkedIn",
   instagram: "Instagram",
   facebook: "Facebook",
@@ -297,6 +299,17 @@ export function ProfileHero({
                           </span>
                         </div>
                       </Link>
+
+                      {/* Discreet user control: jump straight back to the profile instead of
+                          waiting out the rotation. Doesn't pause the rotation permanently —
+                          it just restarts the identity slot's normal hold time. */}
+                      <button
+                        type="button"
+                        onClick={() => setSlotIndex(0)}
+                        className="glass mx-auto mt-4 flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-fg-muted transition-colors duration-200 hover:text-accent"
+                      >
+                        <RotateCcw className="h-3 w-3" /> Back to profile
+                      </button>
                     </motion.div>
                   )
                 )}

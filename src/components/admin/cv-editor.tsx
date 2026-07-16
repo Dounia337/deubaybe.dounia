@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Save, Plus, Trash2, Loader2 } from "lucide-react";
-import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa6";
+import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube, FaGithub } from "react-icons/fa6";
 import { Field, TextInput, TextArea, Toggle } from "@/components/admin/form-fields";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button, Card } from "@/components/ui/primitives";
@@ -25,12 +25,13 @@ type Leadership = { id: number; role: string; organization: string; start_date: 
 type SocialLinkForm = { platform: SocialPlatform; url: string; visible: boolean };
 
 const SOCIAL_PLATFORM_META: Record<SocialPlatform, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  github: { label: "GitHub", icon: FaGithub },
   linkedin: { label: "LinkedIn", icon: FaLinkedin },
   instagram: { label: "Instagram", icon: FaInstagram },
   facebook: { label: "Facebook", icon: FaFacebook },
   youtube: { label: "YouTube", icon: FaYoutube },
 };
-const SOCIAL_PLATFORM_ORDER: SocialPlatform[] = ["linkedin", "instagram", "facebook", "youtube"];
+const SOCIAL_PLATFORM_ORDER: SocialPlatform[] = ["github", "linkedin", "instagram", "facebook", "youtube"];
 
 export function CVEditor() {
   const [loading, setLoading] = useState(true);

@@ -7,14 +7,14 @@ import { handleApiError } from "@/lib/api-helpers";
 const schema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  category: z.string().default("Blue Team"),
-  tools_used: z.array(z.string()).default([]),
+  category: z.string().optional(),
+  tools_used: z.array(z.string()).optional(),
   logs_analysis: z.string().optional(),
   what_i_learned: z.string().optional(),
   image_url: z.string().nullable().optional(),
-  featured: z.boolean().default(false),
-  published: z.boolean().default(true),
-  order_index: z.number().default(0),
+  featured: z.boolean().optional(),
+  published: z.boolean().optional(),
+  order_index: z.number().optional(),
 });
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

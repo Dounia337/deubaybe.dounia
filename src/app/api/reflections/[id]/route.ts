@@ -7,10 +7,10 @@ import { handleApiError } from "@/lib/api-helpers";
 const schema = z.object({
   title: z.string().min(1),
   content: z.string().min(1),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()).optional(),
   image_url: z.string().nullable().optional(),
-  featured: z.boolean().default(false),
-  published: z.boolean().default(true),
+  featured: z.boolean().optional(),
+  published: z.boolean().optional(),
   post_date: z.string().min(1),
 });
 

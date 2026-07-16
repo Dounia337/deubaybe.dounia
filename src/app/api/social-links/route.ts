@@ -16,7 +16,7 @@ export async function GET() {
 const bodySchema = z.object({
   links: z.array(
     z.object({
-      platform: z.enum(["linkedin", "instagram", "facebook", "youtube"]),
+      platform: z.enum(["github", "linkedin", "instagram", "facebook", "youtube"]),
       url: z.string(),
       visible: z.boolean(),
     })

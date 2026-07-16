@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ChevronRight, Home as HomeIcon } from "lucide-react";
+import { ChevronRight, ExternalLink, Home as HomeIcon } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { cx } from "@/lib/format";
 import { Reveal } from "@/components/ui/motion";
 import type { ReactNode } from "react";
@@ -120,6 +121,8 @@ export function OverlayCard({
   title,
   tags,
   date,
+  githubUrl,
+  demoUrl,
   aspect = "aspect-[10/11]",
   className,
 }: {
@@ -131,12 +134,15 @@ export function OverlayCard({
   title: string;
   tags?: string[];
   date?: string;
+  githubUrl?: string | null;
+  demoUrl?: string | null;
   aspect?: string;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const hasActions = Boolean(githubUrl || demoUrl);
 
   const card = (
     <div
@@ -166,15 +172,49 @@ export function OverlayCard({
       {/* Scrim: guarantees the overlaid text stays legible over any image */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/0" />
 
+      {/* Secondary actions — kept slightly visible at rest (not hover-only) so they're reachable
+          on touch devices too, and sharpen up on hover for desktop. Real, independent <a> tags
+          rather than nested inside the card's own link (see the stretched-link swap below). */}
+      {hasActions && (
+        <div className="absolute right-3 top-3 z-10 flex gap-1.5 opacity-80 transition-opacity duration-300 group-hover:opacity-100">
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View source on GitHub"
+              className="glass-strong flex h-8 w-8 items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-110"
+            >
+              <FaGithub className="h-3.5 w-3.5" />
+            </a>
+          )}
+          {demoUrl && (
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View live demo"
+              className="glass-strong flex h-8 w-8 items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-110"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          )}
+        </div>
+      )}
+
       <div className="relative p-5 sm:p-6">
+        {/* When action icons are present, the card's own link can't wrap the whole element
+            (that would nest <a> inside <a>) — it becomes a stretched overlay link instead,
+            a sibling of the action icons rather than their ancestor. */}
+        {href && hasActions && <Link href={href} aria-label={title} className="absolute inset-0" />}
         {category && (
-          <span className="glass mb-2.5 inline-flex items-center rounded-full border-white/20 bg-white/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-white">
+          <span className="glass relative mb-2.5 inline-flex items-center rounded-full border-white/20 bg-white/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-white">
             {category}
           </span>
         )}
-        <h3 className="font-display text-xl font-semibold text-white drop-shadow-sm sm:text-2xl">{title}</h3>
+        <h3 className="relative font-display text-xl font-semibold text-white drop-shadow-sm sm:text-2xl">{title}</h3>
         {tags && tags.length > 0 && (
-          <div className="mt-2.5 flex flex-wrap gap-1.5">
+          <div className="relative mt-2.5 flex flex-wrap gap-1.5">
             {tags.slice(0, 3).map((t) => (
               <span
                 key={t}
@@ -185,17 +225,17 @@ export function OverlayCard({
             ))}
           </div>
         )}
-        {date && <p className="mt-2.5 text-xs text-white/70">{date}</p>}
+        {date && <p className="relative mt-2.5 text-xs text-white/70">{date}</p>}
       </div>
     </div>
   );
 
-  return href ? (
+  if (!href) return card;
+  if (hasActions) return card; // link lives inside as a stretched overlay (see above)
+  return (
     <Link href={href} className="block h-full">
       {card}
     </Link>
-  ) : (
-    card
   );
 }
 
@@ -240,6 +280,7 @@ export function Chip({ children }: { children: ReactNode }) {
 export function Button({
   children,
   href,
+  external,
   variant = "primary",
   type,
   onClick,
@@ -248,6 +289,8 @@ export function Button({
 }: {
   children: ReactNode;
   href?: string;
+  /** Renders as a plain new-tab <a> instead of next/link's <Link> — for off-site URLs (GitHub, live demos, etc). */
+  external?: boolean;
   variant?: "primary" | "secondary" | "ghost" | "danger";
   type?: "button" | "submit";
   onClick?: () => void;
@@ -263,6 +306,13 @@ export function Button({
     className
   );
 
+  if (href && external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={styles}>
+        {children}
+      </a>
+    );
+  }
   if (href) {
     return (
       <Link href={href} className={styles}>

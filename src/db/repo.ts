@@ -127,7 +127,7 @@ export type CVLeadership = {
   order_index: number;
 };
 
-export type SocialPlatform = "linkedin" | "instagram" | "facebook" | "youtube";
+export type SocialPlatform = "linkedin" | "instagram" | "facebook" | "youtube" | "github";
 
 export type SocialLink = {
   id: number;
@@ -471,10 +471,10 @@ export const CVRepo = {
 
 // ---------- Social links ----------
 
-export const SOCIAL_PLATFORMS: SocialPlatform[] = ["linkedin", "instagram", "facebook", "youtube"];
+export const SOCIAL_PLATFORMS: SocialPlatform[] = ["github", "linkedin", "instagram", "facebook", "youtube"];
 
 export const SocialLinksRepo = {
-  /** Always returns all four platforms in a fixed order, even before any row has been saved. */
+  /** Always returns all platforms in a fixed order, even before any row has been saved. */
   async all(): Promise<SocialLink[]> {
     const rows = await sql<SocialLink[]>`SELECT * FROM social_links`;
     const byPlatform = new Map(rows.map((r) => [r.platform, r]));

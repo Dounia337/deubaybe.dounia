@@ -6,14 +6,14 @@ import { handleApiError } from "@/lib/api-helpers";
 
 const schema = z.object({
   title: z.string().min(1),
-  type: z.enum(["Training", "Conference", "Leadership", "Convening", "Workshop"]).default("Training"),
+  type: z.enum(["Training", "Conference", "Leadership", "Convening", "Workshop"]).optional(),
   event_date: z.string().min(1),
   description: z.string().min(1),
   key_takeaway: z.string().optional(),
   image_url: z.string().optional(),
-  featured: z.boolean().default(false),
-  published: z.boolean().default(true),
-  order_index: z.number().default(0),
+  featured: z.boolean().optional(),
+  published: z.boolean().optional(),
+  order_index: z.number().optional(),
 });
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
