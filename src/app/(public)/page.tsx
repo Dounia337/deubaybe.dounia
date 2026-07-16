@@ -107,7 +107,6 @@ export default async function HomePage() {
                   icon={<ShieldCheck />}
                   category={c.category}
                   title={c.title}
-                  aspect="aspect-[4/3]"
                 />
               </RevealItem>
             ))}
@@ -143,7 +142,6 @@ export default async function HomePage() {
                   category={e.type}
                   title={e.title}
                   date={formatDate(e.event_date)}
-                  aspect="aspect-[4/3]"
                 />
               </RevealItem>
             ))}

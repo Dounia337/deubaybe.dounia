@@ -34,7 +34,7 @@ export function ExperienceCard({
       >
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-bg-sunken sm:h-28 sm:w-28">
           {imageUrl ? (
-            <Image src={imageUrl} alt={title} fill sizes="112px" className="object-cover" />
+            <Image src={imageUrl} alt={title} fill sizes="112px" className="object-cover object-top" />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-tertiary/15 via-transparent to-accent/15">
               <Sparkles className="h-7 w-7 text-accent-tertiary" />

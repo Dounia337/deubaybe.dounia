@@ -31,7 +31,6 @@ export default async function CyberLabPage() {
                   category={c.category}
                   title={c.title}
                   tags={(JSON.parse(c.tools_used || "[]") as string[]).slice(0, 3)}
-                  aspect="aspect-[4/3]"
                 />
               </RevealItem>
             ))}

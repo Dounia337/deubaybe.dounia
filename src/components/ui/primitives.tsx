@@ -123,7 +123,7 @@ export function OverlayCard({
   date,
   githubUrl,
   demoUrl,
-  aspect = "aspect-[10/11]",
+  aspect = "aspect-[4/3]",
   className,
 }: {
   href?: string;
@@ -160,7 +160,7 @@ export function OverlayCard({
             alt={alt}
             fill
             sizes="(min-width: 1024px) 420px, 100vw"
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.08]"
+            className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
           />
         </motion.div>
       ) : (
