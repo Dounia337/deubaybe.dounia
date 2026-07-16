@@ -137,6 +137,13 @@ export type SocialLink = {
   updated_at: string;
 };
 
+export type HeroRole = {
+  id: number;
+  text: string;
+  order_index: number;
+  created_at: string;
+};
+
 // ---------- Helpers ----------
 
 export function slugify(input: string): string {
@@ -493,6 +500,33 @@ export const SocialLinksRepo = {
       RETURNING *
     `;
     return rows[0];
+  },
+};
+
+// ---------- Hero roles (animated tagline under the hero photo) ----------
+
+export const HeroRolesRepo = {
+  async all(): Promise<HeroRole[]> {
+    return await sql<HeroRole[]>`SELECT * FROM hero_roles ORDER BY order_index ASC, id ASC`;
+  },
+  async add(text: string): Promise<HeroRole> {
+    const existing = await sql<{ max: number | null }[]>`SELECT MAX(order_index) as max FROM hero_roles`;
+    const nextIndex = (existing[0]?.max ?? -1) + 1;
+    const rows = await sql<HeroRole[]>`
+      INSERT INTO hero_roles (text, order_index) VALUES (${text}, ${nextIndex}) RETURNING *
+    `;
+    return rows[0];
+  },
+  async update(id: number, text: string): Promise<HeroRole | undefined> {
+    const rows = await sql<HeroRole[]>`UPDATE hero_roles SET text = ${text} WHERE id = ${id} RETURNING *`;
+    return rows[0];
+  },
+  async remove(id: number): Promise<void> {
+    await sql`DELETE FROM hero_roles WHERE id = ${id}`;
+  },
+  /** Re-sequences order_index to match the given id order (e.g. after a move up/down in the admin UI). */
+  async reorder(ids: number[]): Promise<void> {
+    await Promise.all(ids.map((id, index) => sql`UPDATE hero_roles SET order_index = ${index} WHERE id = ${id}`));
   },
 };
 

@@ -24,7 +24,7 @@ export default async function AdminProjectsPage() {
         {projects.length === 0 ? (
           <EmptyState title="No projects yet" description="Create your first one to see it here." />
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-left text-sm">
               <thead className="bg-bg-sunken text-xs uppercase tracking-wider text-fg-subtle">
                 <tr>

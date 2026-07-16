@@ -13,33 +13,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Download, RotateCcw, Sparkles } from "lucide-react";
-import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube, FaGithub } from "react-icons/fa6";
 import { Avatar, Button, Eyebrow } from "@/components/ui/primitives";
 import { HELLO_DURATION, I_DURATION, AM_DURATION } from "@/lib/hero-timing";
+import { SOCIAL_ICONS, SOCIAL_LABELS } from "@/lib/social-icons";
 import type { FeaturedItem, SocialPlatform } from "@/db/repo";
 
-const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
-  github: FaGithub,
-  linkedin: FaLinkedin,
-  instagram: FaInstagram,
-  facebook: FaFacebook,
-  youtube: FaYoutube,
-};
-
-const SOCIAL_LABELS: Record<SocialPlatform, string> = {
-  github: "GitHub",
-  linkedin: "LinkedIn",
-  instagram: "Instagram",
-  facebook: "Facebook",
-  youtube: "YouTube",
-};
-
-const ROLES = [
-  "Computer Science student",
-  "Blue Team learner",
-  "Builder for African contexts",
-  "Youth development lead",
-];
+// Used only when the admin hasn't added any tagline entries yet.
+const DEFAULT_ROLES = ["Builder & Leader"];
 
 // How long each slot (identity details, or a featured item) holds before handing off to the next.
 const SLOT_DURATION = 7000;
@@ -72,13 +52,16 @@ export function ProfileHero({
   photoUrl,
   socialLinks = [],
   featured = [],
+  roles = [],
 }: {
   name: string;
   headline: string;
   photoUrl?: string | null;
   socialLinks?: { platform: SocialPlatform; url: string }[];
   featured?: FeaturedItem[];
+  roles?: string[];
 }) {
+  const activeRoles = roles.length > 0 ? roles : DEFAULT_ROLES;
   const prefersReducedMotion = useReducedMotion();
 
   // Entrance choreography: skip straight to the final state for reduced-motion visitors —
@@ -125,7 +108,7 @@ export function ProfileHero({
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const full = ROLES[roleIndex];
+    const full = activeRoles[roleIndex % activeRoles.length];
     const speed = deleting ? 28 : 45;
     const timeout = setTimeout(() => {
       if (!deleting) {
@@ -139,12 +122,12 @@ export function ProfileHero({
           setTyped(typed.slice(0, -1));
         } else {
           setDeleting(false);
-          setRoleIndex((i) => (i + 1) % ROLES.length);
+          setRoleIndex((i) => (i + 1) % activeRoles.length);
         }
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [typed, deleting, roleIndex]);
+  }, [typed, deleting, roleIndex, activeRoles]);
 
   // Ambient blobs drift toward the cursor for a subtle, living backdrop.
   const rawX = useMotionValue(0);

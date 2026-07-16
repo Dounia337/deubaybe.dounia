@@ -9,16 +9,7 @@ import { Moon, Sun } from "lucide-react";
 import { cx } from "@/lib/format";
 import { Avatar } from "@/components/ui/primitives";
 import { HERO_INTRO_MS } from "@/lib/hero-timing";
-
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/cybersecurity", label: "Cyber Lab" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/reflections", label: "Reflections" },
-  { href: "/cv", label: "CV" },
-  { href: "/contact", label: "Contact" },
-];
+import { NAV_LINKS } from "@/lib/nav-links";
 
 const AUTO_PEEK_DELAY = 1100;
 // On the homepage, the hero plays its own "Hello, / I am / [identity]" entrance — the nav

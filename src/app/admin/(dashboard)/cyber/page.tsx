@@ -24,7 +24,7 @@ export default async function AdminCyberPage() {
         {entries.length === 0 ? (
           <EmptyState title="No entries yet" />
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border">
+          <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-left text-sm">
               <thead className="bg-bg-sunken text-xs uppercase tracking-wider text-fg-subtle">
                 <tr>

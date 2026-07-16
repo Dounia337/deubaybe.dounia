@@ -141,6 +141,14 @@ CREATE TABLE IF NOT EXISTS cv_leadership (
   order_index INTEGER NOT NULL DEFAULT 0
 );
 
+-- Animated tagline entries typed out beneath the hero photo (e.g. "Computer Science Student")
+CREATE TABLE IF NOT EXISTS hero_roles (
+  id SERIAL PRIMARY KEY,
+  text TEXT NOT NULL,
+  order_index INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT now()::text
+);
+
 -- Social media links shown as icon buttons in the hero (fixed set of platforms, admin-managed)
 CREATE TABLE IF NOT EXISTS social_links (
   id SERIAL PRIMARY KEY,

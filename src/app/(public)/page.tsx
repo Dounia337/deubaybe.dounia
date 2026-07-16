@@ -2,11 +2,20 @@ import { ArrowUpRight, ShieldCheck, FolderGit2, Sparkles, BookOpen } from "lucid
 import { ProfileHero } from "@/components/profile-hero";
 import { Section, Eyebrow, OverlayCard, Button, EmptyState } from "@/components/ui/primitives";
 import { Reveal, RevealGroup, RevealItem, Parallax } from "@/components/ui/motion";
-import { ProjectsRepo, CyberRepo, ExperiencesRepo, ReflectionsRepo, CVRepo, SocialLinksRepo, FeaturedRepo } from "@/db/repo";
+import {
+  ProjectsRepo,
+  CyberRepo,
+  ExperiencesRepo,
+  ReflectionsRepo,
+  CVRepo,
+  SocialLinksRepo,
+  FeaturedRepo,
+  HeroRolesRepo,
+} from "@/db/repo";
 import { formatDate } from "@/lib/format";
 
 export default async function HomePage() {
-  const [profile, allProjects, allCyberEntries, allExperiences, allReflections, allSocialLinks, featured] =
+  const [profile, allProjects, allCyberEntries, allExperiences, allReflections, allSocialLinks, featured, heroRoles] =
     await Promise.all([
       CVRepo.profile(),
       ProjectsRepo.all(true),
@@ -15,6 +24,7 @@ export default async function HomePage() {
       ReflectionsRepo.all(true),
       SocialLinksRepo.all(),
       FeaturedRepo.all(),
+      HeroRolesRepo.all(),
     ]);
   const socialLinks = allSocialLinks.filter((l) => l.visible && l.url.trim());
   const projects = allProjects.slice(0, 3);
@@ -30,6 +40,7 @@ export default async function HomePage() {
         photoUrl={profile.photo_url}
         socialLinks={socialLinks}
         featured={featured}
+        roles={heroRoles.map((r) => r.text)}
       />
 
       {/* Projects preview */}
