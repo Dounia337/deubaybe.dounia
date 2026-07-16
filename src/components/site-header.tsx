@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type FocusEvent } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
+import { ChevronRight, Moon, Sun } from "lucide-react";
 import { cx } from "@/lib/format";
 import { Avatar } from "@/components/ui/primitives";
 import { HERO_INTRO_MS } from "@/lib/hero-timing";
@@ -15,7 +15,7 @@ const AUTO_PEEK_DELAY = 1100;
 // On the homepage, the hero plays its own "Hello, / I am / [identity]" entrance — the nav
 // shouldn't detach and compete for attention until that has fully landed.
 const HOME_AUTO_PEEK_DELAY = HERO_INTRO_MS + 300;
-const AUTO_PEEK_DURATION = 2600;
+const HINT_DURATION = 1500;
 const CLICK_OPEN_DURATION = 3200;
 
 export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?: string | null }) {
@@ -25,9 +25,11 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const expandedRef = useRef(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusInside = useRef(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount flag, standard SSR-safe pattern
@@ -51,14 +53,16 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
     }, delay);
   }
 
-  // Quietly teach the interaction once: peek open shortly after load, then retract. Delayed
-  // on the homepage until the hero's own entrance has finished, so the two don't compete.
+  // Quietly suggest the interaction once, rather than fully expanding it: a small directional
+  // cue drifts out from the avatar and settles back — "there's something here," not "look at
+  // me." Delayed on the homepage until the hero's own entrance has finished, so the two don't
+  // compete. Real expansion still only ever happens from an actual click or keyboard focus.
   useEffect(() => {
     if (prefersReducedMotion) return;
     const delay = pathname === "/" ? HOME_AUTO_PEEK_DELAY : AUTO_PEEK_DELAY;
     const openTimer = setTimeout(() => {
-      setExpanded(true);
-      scheduleClose(AUTO_PEEK_DURATION);
+      setShowHint(true);
+      hintTimer.current = setTimeout(() => setShowHint(false), HINT_DURATION);
     }, delay);
     return () => clearTimeout(openTimer);
     // Intentionally mount-only — re-firing this on every client-side navigation would mean
@@ -74,6 +78,7 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
         clearCloseTimer();
         setExpanded(false);
       }
+      setShowHint(false);
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -81,9 +86,13 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
   }, []);
 
   useEffect(() => () => clearCloseTimer(), []);
+  useEffect(() => () => {
+    if (hintTimer.current) clearTimeout(hintTimer.current);
+  }, []);
 
   function handleToggle() {
     clearCloseTimer();
+    setShowHint(false);
     setExpanded((v) => {
       const next = !v;
       if (next) scheduleClose(CLICK_OPEN_DURATION);
@@ -95,6 +104,7 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
   function handleFocusCapture() {
     focusInside.current = true;
     clearCloseTimer();
+    setShowHint(false);
   }
   function handleBlurCapture(e: FocusEvent<HTMLDivElement>) {
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -126,6 +136,23 @@ export function SiteHeader({ siteName, photoUrl }: { siteName: string; photoUrl?
               transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
             />
           )}
+
+          {/* Directional hint: a small glass bubble drifts out from the avatar and fades —
+              a quiet "there's something here," not a full reveal of the nav labels. */}
+          <AnimatePresence>
+            {showHint && !expanded && (
+              <motion.span
+                aria-hidden
+                initial={{ opacity: 0, x: -2 }}
+                animate={{ opacity: [0, 1, 1, 0], x: [-2, 5, 7, 10] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5, times: [0, 0.3, 0.75, 1], ease: "easeInOut" }}
+                className="glass pointer-events-none absolute left-full top-1/2 z-10 ml-2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-fg-muted"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </motion.span>
+            )}
+          </AnimatePresence>
 
           <button
             type="button"

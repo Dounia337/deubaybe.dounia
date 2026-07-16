@@ -2,8 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import { useRef } from "react";
+import type { MouseEvent } from "react";
 import { ChevronRight, ExternalLink, Home as HomeIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { cx } from "@/lib/format";
@@ -145,12 +153,47 @@ export function OverlayCard({
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   const hasActions = Boolean(githubUrl || demoUrl);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Subtle "curved glass" tilt: the card leans very slightly toward the pointer, like light
+  // curvature on a soft sphere rather than a flat plane. Values are intentionally tiny —
+  // this should read as physical presence, not as an obvious 3D gimmick.
+  const pointerX = useMotionValue(0.5);
+  const pointerY = useMotionValue(0.5);
+  const springConfig = { stiffness: 220, damping: 22, mass: 0.6 };
+  const rotateX = useSpring(useTransform(pointerY, [0, 1], [3, -3]), springConfig);
+  const rotateY = useSpring(useTransform(pointerX, [0, 1], [-3, 3]), springConfig);
+  const liftY = useSpring(0, springConfig);
+
+  function handlePointerMove(e: MouseEvent<HTMLDivElement>) {
+    if (prefersReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    pointerX.set((e.clientX - rect.left) / rect.width);
+    pointerY.set((e.clientY - rect.top) / rect.height);
+  }
+  function handlePointerEnter() {
+    if (prefersReducedMotion) return;
+    liftY.set(-4);
+  }
+  function handlePointerLeave() {
+    pointerX.set(0.5);
+    pointerY.set(0.5);
+    liftY.set(0);
+  }
 
   const card = (
-    <div
+    <motion.div
       ref={ref}
+      onMouseMove={handlePointerMove}
+      onMouseEnter={handlePointerEnter}
+      onMouseLeave={handlePointerLeave}
+      style={
+        prefersReducedMotion
+          ? undefined
+          : { rotateX, rotateY, y: liftY, transformPerspective: 800 }
+      }
       className={cx(
-        "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
+        "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-shadow duration-300 ease-out hover:shadow-2xl hover:shadow-black/20",
         imgHeight,
         className
       )}
@@ -230,7 +273,7 @@ export function OverlayCard({
         )}
         {date && <p className="relative mt-2.5 text-xs text-white/70">{date}</p>}
       </div>
-    </div>
+    </motion.div>
   );
 
   if (!href) return card;
