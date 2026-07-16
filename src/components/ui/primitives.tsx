@@ -107,11 +107,12 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Editorial media card: full-bleed photo with title/meta overlaid on a
- * frosted glass panel at the bottom, instead of stacked below in a separate
- * text panel or letterboxed on a fill color. Falls back to a tinted gradient
- * + icon when no image has been set yet, so cards never look broken before
- * an admin uploads a real photo.
+ * Editorial media card: full-bleed photo with title/meta overlaid directly
+ * on the image via an eased, multi-stop gradient (no flat panel, no hard
+ * blur boundary), instead of stacked below in a separate text panel or
+ * letterboxed on a fill color. Falls back to a tinted gradient + icon when
+ * no image has been set yet, so cards never look broken before an admin
+ * uploads a real photo.
  */
 export function OverlayCard({
   href,
@@ -124,7 +125,7 @@ export function OverlayCard({
   date,
   githubUrl,
   demoUrl,
-  imgHeight = "h-72 sm:h-80 md:h-96",
+  imgHeight = "h-64 sm:h-72 md:h-80",
   className,
 }: {
   href?: string;
@@ -170,8 +171,9 @@ export function OverlayCard({
         </div>
       )}
 
-      {/* Soft mood gradient — just enough to ground the glass panel below; the image stays visible */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent" />
+      {/* Atmospheric fade: an eased, multi-stop gradient (not a flat panel) so there's no point at
+          which a viewer can locate where the effect "starts" — it reads as shadow, not a layer. */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.58)_0%,rgba(0,0,0,0.34)_28%,rgba(0,0,0,0.14)_55%,rgba(0,0,0,0.03)_78%,rgba(0,0,0,0)_100%)]" />
 
       {/* Secondary actions — kept slightly visible at rest (not hover-only) so they're reachable
           on touch devices too, and sharpen up on hover for desktop. Real, independent <a> tags
@@ -203,9 +205,7 @@ export function OverlayCard({
         </div>
       )}
 
-      {/* Frosted glass caption panel — a genuine backdrop-blur layer (not just a dark gradient)
-          so the photo stays visible and alive right up to the text, iOS-media-card style. */}
-      <div className="relative border-t border-white/15 bg-black/25 p-5 backdrop-blur-md sm:p-6">
+      <div className="relative p-5 sm:p-6">
         {/* When action icons are present, the card's own link can't wrap the whole element
             (that would nest <a> inside <a>) — it becomes a stretched overlay link instead,
             a sibling of the action icons rather than their ancestor. */}
