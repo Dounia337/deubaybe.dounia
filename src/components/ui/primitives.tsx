@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { ChevronRight, ExternalLink, Home as HomeIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { cx } from "@/lib/format";
@@ -105,13 +107,11 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Editorial media card: photo with title/meta overlaid directly on a bottom
- * scrim, instead of stacked below in a separate text panel. The image is
- * letterboxed on a neutral fill (never cropped) inside a fixed-height frame,
- * so portrait, landscape, and square sources all read cleanly at the same
- * card height without losing any content. Falls back to a tinted gradient +
- * icon when no image has been set yet, so cards never look broken before an
- * admin uploads a real photo.
+ * Editorial media card: full-bleed photo with title/meta overlaid on a
+ * frosted glass panel at the bottom, instead of stacked below in a separate
+ * text panel or letterboxed on a fill color. Falls back to a tinted gradient
+ * + icon when no image has been set yet, so cards never look broken before
+ * an admin uploads a real photo.
  */
 export function OverlayCard({
   href,
@@ -124,7 +124,7 @@ export function OverlayCard({
   date,
   githubUrl,
   demoUrl,
-  imgHeight = "h-64 sm:h-72 md:h-80",
+  imgHeight = "h-72 sm:h-80 md:h-96",
   className,
 }: {
   href?: string;
@@ -140,10 +140,14 @@ export function OverlayCard({
   imgHeight?: string;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   const hasActions = Boolean(githubUrl || demoUrl);
 
   const card = (
     <div
+      ref={ref}
       className={cx(
         "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
         imgHeight,
@@ -151,25 +155,23 @@ export function OverlayCard({
       )}
     >
       {src ? (
-        <div className="absolute inset-0 bg-bg-sunken">
-          <div className="absolute inset-3 sm:inset-4">
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              sizes="(min-width: 1024px) 420px, 100vw"
-              className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-            />
-          </div>
-        </div>
+        <motion.div style={{ y }} className="absolute -inset-y-[8%] inset-x-0">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            sizes="(min-width: 1024px) 420px, 100vw"
+            className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
+          />
+        </motion.div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent/30 via-bg-sunken to-accent-secondary/30 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
           <span className="text-accent/50 [&_svg]:h-16 [&_svg]:w-16 sm:[&_svg]:h-20 sm:[&_svg]:w-20">{icon}</span>
         </div>
       )}
 
-      {/* Scrim: guarantees the overlaid text stays legible over any image */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 from-15% via-black/60 via-45% to-black/0" />
+      {/* Soft mood gradient — just enough to ground the glass panel below; the image stays visible */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent" />
 
       {/* Secondary actions — kept slightly visible at rest (not hover-only) so they're reachable
           on touch devices too, and sharpen up on hover for desktop. Real, independent <a> tags
@@ -201,7 +203,9 @@ export function OverlayCard({
         </div>
       )}
 
-      <div className="relative p-5 sm:p-6">
+      {/* Frosted glass caption panel — a genuine backdrop-blur layer (not just a dark gradient)
+          so the photo stays visible and alive right up to the text, iOS-media-card style. */}
+      <div className="relative border-t border-white/15 bg-black/25 p-5 backdrop-blur-md sm:p-6">
         {/* When action icons are present, the card's own link can't wrap the whole element
             (that would nest <a> inside <a>) — it becomes a stretched overlay link instead,
             a sibling of the action icons rather than their ancestor. */}
