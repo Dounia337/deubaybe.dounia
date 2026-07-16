@@ -49,8 +49,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {project.image_url && (
-          <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">
-            <Image src={project.image_url} alt={project.title} fill sizes="(min-width: 768px) 720px, 100vw" className="object-cover" />
+          <div className="relative mt-8 flex h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-lg shadow-black/[0.08] sm:h-[380px] md:h-[460px]">
+            <Image
+              src={project.image_url}
+              alt={project.title}
+              fill
+              sizes="(min-width: 768px) 720px, 100vw"
+              className="object-contain"
+            />
           </div>
         )}
 

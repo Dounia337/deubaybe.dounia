@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, Plus, Trash2, Loader2, ChevronUp, ChevronDown } from "lucide-react";
+import { Save, Plus, Trash2, Pencil, Loader2, ChevronUp, ChevronDown } from "lucide-react";
 import { FaLinkedin, FaInstagram, FaFacebook, FaYoutube, FaGithub } from "react-icons/fa6";
 import { Field, TextInput, TextArea, Toggle } from "@/components/admin/form-fields";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button, Card } from "@/components/ui/primitives";
 import type { SocialPlatform } from "@/db/repo";
 
+type ProfileLink = { label: string; url: string };
 type Profile = {
   full_name: string;
   headline: string;
@@ -15,7 +16,7 @@ type Profile = {
   email: string;
   phone: string;
   location: string;
-  links: { label: string; url: string }[];
+  links: ProfileLink[];
   photo_url: string | null;
 };
 type Education = { id: number; institution: string; degree: string; field: string | null; start_date: string; end_date: string | null; description: string | null };
@@ -305,9 +306,20 @@ function ProfileSection({
 }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [linkForm, setLinkForm] = useState({ label: "", url: "" });
 
   function set<K extends keyof Profile>(key: K, val: Profile[K]) {
     setProfile({ ...profile, [key]: val });
+  }
+
+  function addLink() {
+    if (!linkForm.label.trim() || !linkForm.url.trim()) return;
+    set("links", [...profile.links, { label: linkForm.label, url: linkForm.url }]);
+    setLinkForm({ label: "", url: "" });
+  }
+
+  function removeLink(index: number) {
+    set("links", profile.links.filter((_, i) => i !== index));
   }
 
   async function save() {
@@ -352,6 +364,43 @@ function ProfileSection({
             <TextInput value={profile.location} onChange={(e) => set("location", e.target.value)} />
           </Field>
         </div>
+
+        <Field label="Links" hint="Shown under your summary on the CV page — portfolio, GitHub, anything else you want listed.">
+          <div className="space-y-2">
+            {profile.links.map((l, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="flex-1 truncate rounded-md border border-border-strong bg-bg-elevated px-3.5 py-2 text-sm text-fg">
+                  <span className="font-medium">{l.label}</span>{" "}
+                  <span className="text-fg-subtle">— {l.url}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeLink(i)}
+                  aria-label="Remove link"
+                  className="shrink-0 cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-danger"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+            <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border-strong p-3 sm:flex-row">
+              <TextInput
+                placeholder="Label e.g. Portfolio"
+                value={linkForm.label}
+                onChange={(e) => setLinkForm({ ...linkForm, label: e.target.value })}
+              />
+              <TextInput
+                placeholder="https://…"
+                value={linkForm.url}
+                onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+              />
+              <Button type="button" variant="secondary" onClick={addLink} className="shrink-0">
+                <Plus className="h-4 w-4" /> Add
+              </Button>
+            </div>
+          </div>
+        </Field>
+
         <Button onClick={save} disabled={saving}>
           <Save className="h-4 w-4" /> {saving ? "Saving…" : saved ? "Saved" : "Save profile"}
         </Button>
@@ -360,9 +409,15 @@ function ProfileSection({
   );
 }
 
+type EducationForm = { institution: string; degree: string; field: string; start_date: string; end_date: string; description: string };
+const EMPTY_EDUCATION: EducationForm = { institution: "", degree: "", field: "", start_date: "", end_date: "", description: "" };
+
 function EducationSection({ items, reload }: { items: Education[]; reload: () => void }) {
-  const [form, setForm] = useState({ institution: "", degree: "", field: "", start_date: "", end_date: "", description: "" });
+  const [form, setForm] = useState<EducationForm>(EMPTY_EDUCATION);
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<EducationForm>(EMPTY_EDUCATION);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function add() {
     if (!form.institution || !form.degree || !form.start_date) return;
@@ -372,7 +427,7 @@ function EducationSection({ items, reload }: { items: Education[]; reload: () =>
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setForm({ institution: "", degree: "", field: "", start_date: "", end_date: "", description: "" });
+    setForm(EMPTY_EDUCATION);
     setAdding(false);
     reload();
   }
@@ -382,22 +437,75 @@ function EducationSection({ items, reload }: { items: Education[]; reload: () =>
     reload();
   }
 
+  function startEdit(e: Education) {
+    setEditingId(e.id);
+    setEditForm({
+      institution: e.institution,
+      degree: e.degree,
+      field: e.field || "",
+      start_date: e.start_date,
+      end_date: e.end_date || "",
+      description: e.description || "",
+    });
+  }
+
+  async function saveEdit() {
+    if (editingId === null) return;
+    setSavingEdit(true);
+    await fetch(`/api/cv/education/${editingId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editForm),
+    });
+    setSavingEdit(false);
+    setEditingId(null);
+    reload();
+  }
+
   return (
     <section>
       <h2 className="font-display text-lg font-semibold text-fg">Education</h2>
       <div className="mt-4 space-y-3">
-        {items.map((e) => (
-          <Card key={e.id} className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium text-fg">{e.institution}</p>
-              <p className="text-sm text-fg-muted">{e.degree}{e.field ? `, ${e.field}` : ""}</p>
-              <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
-            </div>
-            <button onClick={() => remove(e.id)} className="rounded-md p-2 text-fg-muted hover:text-danger">
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </Card>
-        ))}
+        {items.map((e) =>
+          editingId === e.id ? (
+            <Card key={e.id} className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextInput placeholder="Institution" value={editForm.institution} onChange={(ev) => setEditForm({ ...editForm, institution: ev.target.value })} />
+                <TextInput placeholder="Degree" value={editForm.degree} onChange={(ev) => setEditForm({ ...editForm, degree: ev.target.value })} />
+              </div>
+              <TextInput placeholder="Field of study (optional)" value={editForm.field} onChange={(ev) => setEditForm({ ...editForm, field: ev.target.value })} />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <TextInput type="date" value={editForm.start_date} onChange={(ev) => setEditForm({ ...editForm, start_date: ev.target.value })} />
+                <TextInput type="date" value={editForm.end_date} onChange={(ev) => setEditForm({ ...editForm, end_date: ev.target.value })} placeholder="End (blank = present)" />
+              </div>
+              <TextArea placeholder="Description (optional)" rows={2} value={editForm.description} onChange={(ev) => setEditForm({ ...editForm, description: ev.target.value })} />
+              <div className="flex gap-2">
+                <Button type="button" onClick={saveEdit} disabled={savingEdit}>
+                  <Save className="h-4 w-4" /> {savingEdit ? "Saving…" : "Save"}
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingId(null)}>
+                  Cancel
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Card key={e.id} className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-fg">{e.institution}</p>
+                <p className="text-sm text-fg-muted">{e.degree}{e.field ? `, ${e.field}` : ""}</p>
+                <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button type="button" onClick={() => startEdit(e)} aria-label="Edit" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-accent">
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => remove(e.id)} aria-label="Remove" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-danger">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </Card>
+          )
+        )}
       </div>
       <div className="mt-4 grid gap-3 rounded-lg border border-dashed border-border-strong p-4 sm:grid-cols-2">
         <TextInput placeholder="Institution" value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })} />
@@ -416,9 +524,15 @@ function EducationSection({ items, reload }: { items: Education[]; reload: () =>
   );
 }
 
+type ExperienceForm = { organization: string; role: string; start_date: string; end_date: string; description: string };
+const EMPTY_EXPERIENCE: ExperienceForm = { organization: "", role: "", start_date: "", end_date: "", description: "" };
+
 function ExperienceSection({ items, reload }: { items: WorkExperience[]; reload: () => void }) {
-  const [form, setForm] = useState({ organization: "", role: "", start_date: "", end_date: "", description: "" });
+  const [form, setForm] = useState<ExperienceForm>(EMPTY_EXPERIENCE);
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<ExperienceForm>(EMPTY_EXPERIENCE);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function add() {
     if (!form.organization || !form.role || !form.start_date) return;
@@ -428,7 +542,7 @@ function ExperienceSection({ items, reload }: { items: WorkExperience[]; reload:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setForm({ organization: "", role: "", start_date: "", end_date: "", description: "" });
+    setForm(EMPTY_EXPERIENCE);
     setAdding(false);
     reload();
   }
@@ -438,21 +552,72 @@ function ExperienceSection({ items, reload }: { items: WorkExperience[]; reload:
     reload();
   }
 
+  function startEdit(e: WorkExperience) {
+    setEditingId(e.id);
+    setEditForm({
+      organization: e.organization,
+      role: e.role,
+      start_date: e.start_date,
+      end_date: e.end_date || "",
+      description: e.description || "",
+    });
+  }
+
+  async function saveEdit() {
+    if (editingId === null) return;
+    setSavingEdit(true);
+    await fetch(`/api/cv/experience/${editingId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editForm),
+    });
+    setSavingEdit(false);
+    setEditingId(null);
+    reload();
+  }
+
   return (
     <section>
       <h2 className="font-display text-lg font-semibold text-fg">Experience</h2>
       <div className="mt-4 space-y-3">
-        {items.map((e) => (
-          <Card key={e.id} className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium text-fg">{e.role} · {e.organization}</p>
-              <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
-            </div>
-            <button onClick={() => remove(e.id)} className="rounded-md p-2 text-fg-muted hover:text-danger">
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </Card>
-        ))}
+        {items.map((e) =>
+          editingId === e.id ? (
+            <Card key={e.id} className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextInput placeholder="Organization" value={editForm.organization} onChange={(ev) => setEditForm({ ...editForm, organization: ev.target.value })} />
+                <TextInput placeholder="Role" value={editForm.role} onChange={(ev) => setEditForm({ ...editForm, role: ev.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <TextInput type="date" value={editForm.start_date} onChange={(ev) => setEditForm({ ...editForm, start_date: ev.target.value })} />
+                <TextInput type="date" value={editForm.end_date} onChange={(ev) => setEditForm({ ...editForm, end_date: ev.target.value })} placeholder="End (blank = present)" />
+              </div>
+              <TextArea placeholder="Description (optional)" rows={2} value={editForm.description} onChange={(ev) => setEditForm({ ...editForm, description: ev.target.value })} />
+              <div className="flex gap-2">
+                <Button type="button" onClick={saveEdit} disabled={savingEdit}>
+                  <Save className="h-4 w-4" /> {savingEdit ? "Saving…" : "Save"}
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingId(null)}>
+                  Cancel
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Card key={e.id} className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-fg">{e.role} · {e.organization}</p>
+                <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button type="button" onClick={() => startEdit(e)} aria-label="Edit" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-accent">
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => remove(e.id)} aria-label="Remove" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-danger">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </Card>
+          )
+        )}
       </div>
       <div className="mt-4 grid gap-3 rounded-lg border border-dashed border-border-strong p-4 sm:grid-cols-2">
         <TextInput placeholder="Organization" value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} />
@@ -470,9 +635,15 @@ function ExperienceSection({ items, reload }: { items: WorkExperience[]; reload:
   );
 }
 
+type LeadershipForm = { role: string; organization: string; start_date: string; end_date: string; description: string };
+const EMPTY_LEADERSHIP: LeadershipForm = { role: "", organization: "", start_date: "", end_date: "", description: "" };
+
 function LeadershipSection({ items, reload }: { items: Leadership[]; reload: () => void }) {
-  const [form, setForm] = useState({ role: "", organization: "", start_date: "", end_date: "", description: "" });
+  const [form, setForm] = useState<LeadershipForm>(EMPTY_LEADERSHIP);
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<LeadershipForm>(EMPTY_LEADERSHIP);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function add() {
     if (!form.role || !form.organization || !form.start_date) return;
@@ -482,7 +653,7 @@ function LeadershipSection({ items, reload }: { items: Leadership[]; reload: () 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setForm({ role: "", organization: "", start_date: "", end_date: "", description: "" });
+    setForm(EMPTY_LEADERSHIP);
     setAdding(false);
     reload();
   }
@@ -492,21 +663,72 @@ function LeadershipSection({ items, reload }: { items: Leadership[]; reload: () 
     reload();
   }
 
+  function startEdit(e: Leadership) {
+    setEditingId(e.id);
+    setEditForm({
+      role: e.role,
+      organization: e.organization,
+      start_date: e.start_date,
+      end_date: e.end_date || "",
+      description: e.description || "",
+    });
+  }
+
+  async function saveEdit() {
+    if (editingId === null) return;
+    setSavingEdit(true);
+    await fetch(`/api/cv/leadership/${editingId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editForm),
+    });
+    setSavingEdit(false);
+    setEditingId(null);
+    reload();
+  }
+
   return (
     <section>
       <h2 className="font-display text-lg font-semibold text-fg">Leadership</h2>
       <div className="mt-4 space-y-3">
-        {items.map((e) => (
-          <Card key={e.id} className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium text-fg">{e.role} · {e.organization}</p>
-              <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
-            </div>
-            <button onClick={() => remove(e.id)} className="rounded-md p-2 text-fg-muted hover:text-danger">
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </Card>
-        ))}
+        {items.map((e) =>
+          editingId === e.id ? (
+            <Card key={e.id} className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextInput placeholder="Role" value={editForm.role} onChange={(ev) => setEditForm({ ...editForm, role: ev.target.value })} />
+                <TextInput placeholder="Organization" value={editForm.organization} onChange={(ev) => setEditForm({ ...editForm, organization: ev.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <TextInput type="date" value={editForm.start_date} onChange={(ev) => setEditForm({ ...editForm, start_date: ev.target.value })} />
+                <TextInput type="date" value={editForm.end_date} onChange={(ev) => setEditForm({ ...editForm, end_date: ev.target.value })} placeholder="End (blank = present)" />
+              </div>
+              <TextArea placeholder="Description (optional)" rows={2} value={editForm.description} onChange={(ev) => setEditForm({ ...editForm, description: ev.target.value })} />
+              <div className="flex gap-2">
+                <Button type="button" onClick={saveEdit} disabled={savingEdit}>
+                  <Save className="h-4 w-4" /> {savingEdit ? "Saving…" : "Save"}
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingId(null)}>
+                  Cancel
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Card key={e.id} className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium text-fg">{e.role} · {e.organization}</p>
+                <p className="font-mono text-xs text-fg-subtle">{e.start_date} – {e.end_date || "Present"}</p>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button type="button" onClick={() => startEdit(e)} aria-label="Edit" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-accent">
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => remove(e.id)} aria-label="Remove" className="cursor-pointer rounded-md p-2 text-fg-muted transition-colors hover:text-danger">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </Card>
+          )
+        )}
       </div>
       <div className="mt-4 grid gap-3 rounded-lg border border-dashed border-border-strong p-4 sm:grid-cols-2">
         <TextInput placeholder="Role" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
@@ -527,6 +749,9 @@ function LeadershipSection({ items, reload }: { items: Leadership[]; reload: () 
 function SkillsSection({ items, reload }: { items: Skill[]; reload: () => void }) {
   const [form, setForm] = useState({ category: "", name: "", level: 3 });
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function add() {
     if (!form.category || !form.name) return;
@@ -546,6 +771,19 @@ function SkillsSection({ items, reload }: { items: Skill[]; reload: () => void }
     reload();
   }
 
+  async function saveEdit(id: number) {
+    if (!editName.trim()) return;
+    setSavingEdit(true);
+    await fetch(`/api/cv/skills/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editName }),
+    });
+    setSavingEdit(false);
+    setEditingId(null);
+    reload();
+  }
+
   const byCategory = items.reduce<Record<string, Skill[]>>((acc, s) => {
     acc[s.category] = acc[s.category] || [];
     acc[s.category].push(s);
@@ -560,17 +798,49 @@ function SkillsSection({ items, reload }: { items: Skill[]; reload: () => void }
           <div key={category}>
             <p className="mb-2 font-mono text-xs uppercase tracking-wider text-accent">{category}</p>
             <div className="flex flex-wrap gap-2">
-              {skills.map((s) => (
-                <span
-                  key={s.id}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-elevated px-3 py-1 text-sm text-fg"
-                >
-                  {s.name}
-                  <button onClick={() => remove(s.id)} className="text-fg-subtle hover:text-danger">
-                    <Trash2 className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
+              {skills.map((s) =>
+                editingId === s.id ? (
+                  <span key={s.id} className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-bg-elevated py-1 pl-3 pr-1.5">
+                    <input
+                      autoFocus
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && saveEdit(s.id)}
+                      className="w-24 bg-transparent text-sm text-fg outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(s.id)}
+                      disabled={savingEdit}
+                      aria-label="Save"
+                      className="cursor-pointer rounded-full p-1 text-fg-subtle hover:text-accent"
+                    >
+                      <Save className="h-3 w-3" />
+                    </button>
+                  </span>
+                ) : (
+                  <span
+                    key={s.id}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-elevated px-3 py-1 text-sm text-fg"
+                  >
+                    {s.name}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingId(s.id);
+                        setEditName(s.name);
+                      }}
+                      aria-label="Edit"
+                      className="cursor-pointer text-fg-subtle hover:text-accent"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                    <button type="button" onClick={() => remove(s.id)} aria-label="Remove" className="cursor-pointer text-fg-subtle hover:text-danger">
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </span>
+                )
+              )}
             </div>
           </div>
         ))}

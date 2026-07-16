@@ -462,6 +462,58 @@ export const CVRepo = {
       VALUES (${d.role || ""}, ${d.organization || ""}, ${d.start_date || ""}, ${d.end_date ?? null}, ${d.description ?? null}, ${d.order_index ?? 0})
     `;
   },
+  async updateEducation(id: number, d: Partial<CVEducation>): Promise<CVEducation | undefined> {
+    const existing = (await sql<CVEducation[]>`SELECT * FROM cv_education WHERE id = ${id}`)[0];
+    if (!existing) return undefined;
+    const rows = await sql<CVEducation[]>`
+      UPDATE cv_education SET
+        institution = ${d.institution ?? existing.institution}, degree = ${d.degree ?? existing.degree},
+        field = ${d.field ?? existing.field}, start_date = ${d.start_date ?? existing.start_date},
+        end_date = ${d.end_date ?? existing.end_date}, description = ${d.description ?? existing.description},
+        order_index = ${d.order_index ?? existing.order_index}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return rows[0];
+  },
+  async updateExperience(id: number, d: Partial<CVExperience>): Promise<CVExperience | undefined> {
+    const existing = (await sql<CVExperience[]>`SELECT * FROM cv_experience WHERE id = ${id}`)[0];
+    if (!existing) return undefined;
+    const rows = await sql<CVExperience[]>`
+      UPDATE cv_experience SET
+        organization = ${d.organization ?? existing.organization}, role = ${d.role ?? existing.role},
+        start_date = ${d.start_date ?? existing.start_date}, end_date = ${d.end_date ?? existing.end_date},
+        description = ${d.description ?? existing.description}, order_index = ${d.order_index ?? existing.order_index}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return rows[0];
+  },
+  async updateSkill(id: number, d: Partial<CVSkill>): Promise<CVSkill | undefined> {
+    const existing = (await sql<CVSkill[]>`SELECT * FROM cv_skills WHERE id = ${id}`)[0];
+    if (!existing) return undefined;
+    const rows = await sql<CVSkill[]>`
+      UPDATE cv_skills SET
+        category = ${d.category ?? existing.category}, name = ${d.name ?? existing.name},
+        level = ${d.level ?? existing.level}, order_index = ${d.order_index ?? existing.order_index}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return rows[0];
+  },
+  async updateLeadership(id: number, d: Partial<CVLeadership>): Promise<CVLeadership | undefined> {
+    const existing = (await sql<CVLeadership[]>`SELECT * FROM cv_leadership WHERE id = ${id}`)[0];
+    if (!existing) return undefined;
+    const rows = await sql<CVLeadership[]>`
+      UPDATE cv_leadership SET
+        role = ${d.role ?? existing.role}, organization = ${d.organization ?? existing.organization},
+        start_date = ${d.start_date ?? existing.start_date}, end_date = ${d.end_date ?? existing.end_date},
+        description = ${d.description ?? existing.description}, order_index = ${d.order_index ?? existing.order_index}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return rows[0];
+  },
   async removeEducation(id: number): Promise<void> {
     await sql`DELETE FROM cv_education WHERE id = ${id}`;
   },

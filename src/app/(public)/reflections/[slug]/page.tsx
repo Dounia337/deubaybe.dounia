@@ -36,8 +36,14 @@ export default async function ReflectionDetailPage({ params }: { params: Promise
         </div>
 
         {reflection.image_url && (
-          <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">
-            <Image src={reflection.image_url} alt={reflection.title} fill sizes="(min-width: 768px) 640px, 100vw" className="object-cover" />
+          <div className="relative mt-6 flex h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-lg shadow-black/[0.08] sm:h-[380px] md:h-[440px]">
+            <Image
+              src={reflection.image_url}
+              alt={reflection.title}
+              fill
+              sizes="(min-width: 768px) 640px, 100vw"
+              className="object-contain"
+            />
           </div>
         )}
 

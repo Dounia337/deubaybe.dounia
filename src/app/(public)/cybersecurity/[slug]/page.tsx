@@ -29,8 +29,14 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
         <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{entry.title}</h1>
 
         {entry.image_url && (
-          <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-2xl shadow-lg shadow-black/[0.08]">
-            <Image src={entry.image_url} alt={entry.title} fill sizes="(min-width: 768px) 720px, 100vw" className="object-cover" />
+          <div className="relative mt-6 flex h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-lg shadow-black/[0.08] sm:h-[380px] md:h-[460px]">
+            <Image
+              src={entry.image_url}
+              alt={entry.title}
+              fill
+              sizes="(min-width: 768px) 720px, 100vw"
+              className="object-contain"
+            />
           </div>
         )}
 

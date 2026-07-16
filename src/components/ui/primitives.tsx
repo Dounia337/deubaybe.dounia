@@ -259,7 +259,13 @@ export function Avatar({
       style={{ width: size, height: size }}
     >
       {src ? (
-        <Image src={src} alt={alt} fill sizes={typeof size === "number" ? `${size}px` : "240px"} className="object-cover" />
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes={typeof size === "number" ? `${size}px` : "240px"}
+          className="object-cover object-top"
+        />
       ) : (
         <div className="flex h-full w-full items-center justify-center font-display text-sm font-medium text-accent">
           {alt.charAt(0).toUpperCase()}
