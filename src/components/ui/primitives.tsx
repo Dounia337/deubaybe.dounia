@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
 import { ChevronRight, ExternalLink, Home as HomeIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { cx } from "@/lib/format";
@@ -107,10 +105,13 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Editorial media card: full-bleed photo with title/meta overlaid directly on
- * a bottom scrim, instead of stacked below in a separate text panel. Falls
- * back to a tinted gradient + icon when no image has been set yet, so cards
- * never look broken before an admin uploads a real photo.
+ * Editorial media card: photo with title/meta overlaid directly on a bottom
+ * scrim, instead of stacked below in a separate text panel. The image is
+ * letterboxed on a neutral fill (never cropped) inside a fixed-height frame,
+ * so portrait, landscape, and square sources all read cleanly at the same
+ * card height without losing any content. Falls back to a tinted gradient +
+ * icon when no image has been set yet, so cards never look broken before an
+ * admin uploads a real photo.
  */
 export function OverlayCard({
   href,
@@ -123,7 +124,7 @@ export function OverlayCard({
   date,
   githubUrl,
   demoUrl,
-  aspect = "aspect-video",
+  imgHeight = "h-64 sm:h-72 md:h-80",
   className,
 }: {
   href?: string;
@@ -136,33 +137,31 @@ export function OverlayCard({
   date?: string;
   githubUrl?: string | null;
   demoUrl?: string | null;
-  aspect?: string;
+  imgHeight?: string;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   const hasActions = Boolean(githubUrl || demoUrl);
 
   const card = (
     <div
-      ref={ref}
       className={cx(
-        "group relative flex h-full w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
-        aspect,
+        "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
+        imgHeight,
         className
       )}
     >
       {src ? (
-        <motion.div style={{ y }} className="absolute -inset-y-[8%] inset-x-0">
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            sizes="(min-width: 1024px) 420px, 100vw"
-            className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
-          />
-        </motion.div>
+        <div className="absolute inset-0 bg-bg-sunken">
+          <div className="absolute inset-3 sm:inset-4">
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              sizes="(min-width: 1024px) 420px, 100vw"
+              className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            />
+          </div>
+        </div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent/30 via-bg-sunken to-accent-secondary/30 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
           <span className="text-accent/50 [&_svg]:h-16 [&_svg]:w-16 sm:[&_svg]:h-20 sm:[&_svg]:w-20">{icon}</span>
