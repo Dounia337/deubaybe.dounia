@@ -123,7 +123,7 @@ export function OverlayCard({
   date,
   githubUrl,
   demoUrl,
-  aspect = "aspect-[4/3]",
+  aspect = "aspect-video",
   className,
 }: {
   href?: string;
@@ -170,7 +170,7 @@ export function OverlayCard({
       )}
 
       {/* Scrim: guarantees the overlaid text stays legible over any image */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/0" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 from-15% via-black/60 via-45% to-black/0" />
 
       {/* Secondary actions — kept slightly visible at rest (not hover-only) so they're reachable
           on touch devices too, and sharpen up on hover for desktop. Real, independent <a> tags
