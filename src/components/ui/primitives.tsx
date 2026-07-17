@@ -174,15 +174,20 @@ export function OverlayCard({
       )}
 
       {/* Edge integration: the page's own background color (theme-aware, not a hardcoded tone)
-          shows through at just the outer rim, via a mask rather than lowering the image's own
-          opacity — so the crisp photo stays fully sharp everywhere except the last sliver, where
-          it softly gives way to whatever's actually behind the card instead of ending on a hard
-          rectangle silhouette. No blur, no border, no frame color of its own. */}
+          takes over gradually toward the rim, via a mask rather than lowering the image's own
+          opacity — so the crisp photo stays fully sharp across its center. The fade uses several
+          eased stops instead of one linear ramp: a two-stop fade still has a sharp "kink" where
+          it starts and where it finishes, and that kink is exactly what a viewer perceives as an
+          edge even when the fade itself is soft. Easing it in and back out removes that corner,
+          and starting the fade well before the true edge (not just a thin rim) gives it room to
+          actually read as continuous rather than a border. No blur, no border, no frame color. */}
       <div
         className="pointer-events-none absolute inset-0 bg-bg"
         style={{
-          maskImage: "radial-gradient(ellipse 94% 94% at 50% 50%, transparent 80%, black 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 94% 94% at 50% 50%, transparent 80%, black 100%)",
+          maskImage:
+            "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 0%, transparent 42%, rgba(0,0,0,0.05) 58%, rgba(0,0,0,0.16) 70%, rgba(0,0,0,0.38) 80%, rgba(0,0,0,0.68) 89%, rgba(0,0,0,0.92) 96%, black 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 0%, transparent 42%, rgba(0,0,0,0.05) 58%, rgba(0,0,0,0.16) 70%, rgba(0,0,0,0.38) 80%, rgba(0,0,0,0.68) 89%, rgba(0,0,0,0.92) 96%, black 100%)",
         }}
       />
 
