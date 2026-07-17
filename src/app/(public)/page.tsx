@@ -43,9 +43,44 @@ export default async function HomePage() {
         roles={heroRoles.map((r) => r.text)}
       />
 
-      {/* Projects preview — the whole section is skipped when there's nothing published yet,
-          so the homepage never shows a placeholder; empty states only live on the dedicated
-          listing pages, reached by intentional navigation. */}
+      {/* Experiences preview — moved first after the hero so the homepage tells "who I am /
+          what I've experienced" before "what I've built": credibility and journey lead,
+          projects follow. Whole section is skipped when there's nothing published yet, so the
+          homepage never shows a placeholder; empty states only live on the dedicated listing
+          pages, reached by intentional navigation. */}
+      {experiences.length > 0 && (
+        <Section className="hero-wash">
+          <Reveal className="mx-auto mb-10 max-w-xl text-center">
+            <Parallax offset={14}>
+              <Eyebrow>Experiences</Eyebrow>
+              <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Trainings &amp; convenings</h2>
+            </Parallax>
+            <div className="mt-5">
+              <Button href="/experiences" variant="ghost">
+                Full timeline <ArrowUpRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </Reveal>
+
+          <RevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {experiences.map((e) => (
+              <RevealItem key={e.id}>
+                <OverlayCard
+                  href="/experiences"
+                  src={e.image_url}
+                  alt={e.title}
+                  icon={<Sparkles />}
+                  category={e.type}
+                  title={e.title}
+                  date={formatDate(e.event_date)}
+                />
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </Section>
+      )}
+
+      {/* Projects preview */}
       {projects.length > 0 && (
         <Section className="hero-wash">
           <Reveal className="mx-auto mb-10 max-w-xl text-center">
@@ -102,39 +137,6 @@ export default async function HomePage() {
                   icon={<ShieldCheck />}
                   category={c.category}
                   title={c.title}
-                />
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </Section>
-      )}
-
-      {/* Experiences preview */}
-      {experiences.length > 0 && (
-        <Section className="hero-wash">
-          <Reveal className="mx-auto mb-10 max-w-xl text-center">
-            <Parallax offset={14}>
-              <Eyebrow>Experiences</Eyebrow>
-              <h2 className="mt-2 font-display text-4xl font-semibold text-fg sm:text-5xl">Trainings &amp; convenings</h2>
-            </Parallax>
-            <div className="mt-5">
-              <Button href="/experiences" variant="ghost">
-                Full timeline <ArrowUpRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </Reveal>
-
-          <RevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {experiences.map((e) => (
-              <RevealItem key={e.id}>
-                <OverlayCard
-                  href="/experiences"
-                  src={e.image_url}
-                  alt={e.title}
-                  icon={<Sparkles />}
-                  category={e.type}
-                  title={e.title}
-                  date={formatDate(e.event_date)}
                 />
               </RevealItem>
             ))}

@@ -107,14 +107,14 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Editorial media card: full-bleed, always-sharp photo with title/meta overlaid directly on it
- * via an eased gradient for contrast (color only — never a blur over the image itself, which
- * stays crisp since it's the storytelling element). No border radius or shadow either — the card
- * reads as content sitting on the page rather than a UI container; whatever "glass" quality the
- * page has lives in the atmospheric background behind it and in the small badge/icon chips
- * layered on top (both genuinely translucent), not in the photo. Falls back to a tinted gradient
- * + icon when no image has been set yet, so cards never look broken before an admin uploads a
- * real photo.
+ * Editorial media card: full-bleed photo, sharp and untouched across its center, with title/meta
+ * overlaid via an eased color gradient for contrast. The rim gets a three-step hand-off instead
+ * of a single treatment — crisp photo, to a masked soft-focus ring of that same photo, to the
+ * page's own background color — so the card's edge dissolves gradually rather than reading as a
+ * cut line, without ever blurring or dimming the part of the image someone's actually looking at.
+ * No border radius or shadow either — the card reads as content sitting on the page rather than a
+ * UI container. Falls back to a tinted gradient + icon when no image has been set yet, so cards
+ * never look broken before an admin uploads a real photo.
  */
 export function OverlayCard({
   href,
@@ -166,6 +166,25 @@ export function OverlayCard({
             sizes="(min-width: 1024px) 420px, 100vw"
             className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.08]"
           />
+          {/* Depth-of-field edge: the same photo, softly blurred, masked to appear only in a
+              ring near the rim (fully transparent — i.e. hidden, showing the crisp layer below —
+              across the whole center). This gives the transition a middle step, sharp -> soft ->
+              page color, instead of jumping straight from a crisp photo to flat color, which is
+              what still read as a locatable "line" even when that color fade itself was eased. */}
+          <Image
+            src={src}
+            alt=""
+            aria-hidden
+            fill
+            sizes="(min-width: 1024px) 420px, 100vw"
+            className="object-cover object-top blur-md transition-transform duration-500 ease-out group-hover:scale-[1.08]"
+            style={{
+              maskImage:
+                "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 0%, transparent 60%, rgba(0,0,0,0.5) 78%, black 92%, black 100%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 0%, transparent 60%, rgba(0,0,0,0.5) 78%, black 92%, black 100%)",
+            }}
+          />
         </motion.div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent/30 via-bg-sunken to-accent-secondary/30 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
@@ -175,12 +194,11 @@ export function OverlayCard({
 
       {/* Edge integration: the page's own background color (theme-aware, not a hardcoded tone)
           takes over gradually toward the rim, via a mask rather than lowering the image's own
-          opacity — so the crisp photo stays fully sharp across its center. The fade uses several
-          eased stops instead of one linear ramp: a two-stop fade still has a sharp "kink" where
-          it starts and where it finishes, and that kink is exactly what a viewer perceives as an
-          edge even when the fade itself is soft. Easing it in and back out removes that corner,
-          and starting the fade well before the true edge (not just a thin rim) gives it room to
-          actually read as continuous rather than a border. No blur, no border, no frame color. */}
+          opacity. The fade uses several eased stops instead of one linear ramp: a two-stop fade
+          still has a sharp "kink" where it starts and where it finishes, and that kink is exactly
+          what a viewer perceives as an edge even when the fade itself is soft. Easing it in and
+          back out removes that corner, and starting well before the true edge gives it room to
+          actually read as continuous rather than a border. No added border or frame color. */}
       <div
         className="pointer-events-none absolute inset-0 bg-bg"
         style={{
