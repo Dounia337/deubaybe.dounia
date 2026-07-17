@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
         description="Problem, solution, and impact for each system I've shipped — from campus tools to platforms built for African contexts."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Projects" }]}
       />
-      <Section>
+      <Section className="hero-wash">
         {projects.length === 0 ? (
           <EmptyState
             icon={<FolderGit2 />}

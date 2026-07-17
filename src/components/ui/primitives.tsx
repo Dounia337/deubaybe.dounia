@@ -107,12 +107,14 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * Editorial media card: full-bleed photo with title/meta overlaid directly on the image via a
- * masked backdrop-blur (fades in gradually, no hard "blur starts here" line) plus an eased
- * gradient for contrast, instead of a flat panel, a bordered box, or letterboxing on a fill
- * color. No border radius or shadow either — the card reads as content sitting on the page
- * rather than a UI container. Falls back to a tinted gradient + icon when no image has been set
- * yet, so cards never look broken before an admin uploads a real photo.
+ * Editorial media card: full-bleed, always-sharp photo with title/meta overlaid directly on it
+ * via an eased gradient for contrast (color only — never a blur over the image itself, which
+ * stays crisp since it's the storytelling element). No border radius or shadow either — the card
+ * reads as content sitting on the page rather than a UI container; whatever "glass" quality the
+ * page has lives in the atmospheric background behind it and in the small badge/icon chips
+ * layered on top (both genuinely translucent), not in the photo. Falls back to a tinted gradient
+ * + icon when no image has been set yet, so cards never look broken before an admin uploads a
+ * real photo.
  */
 export function OverlayCard({
   href,
@@ -176,18 +178,6 @@ export function OverlayCard({
           edges sit a touch darker (like they're receding). Both intensify a little on hover. */}
       <div className="pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light transition-opacity duration-300 ease-out group-hover:opacity-100 bg-[radial-gradient(ellipse_62%_85%_at_50%_40%,rgba(255,255,255,0.5),rgba(255,255,255,0)_72%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-60 transition-opacity duration-300 ease-out group-hover:opacity-90 bg-[linear-gradient(to_right,rgba(0,0,0,0.20),rgba(0,0,0,0)_18%,rgba(0,0,0,0)_82%,rgba(0,0,0,0.20))]" />
-
-      {/* Glass depth: real backdrop-blur (not just a color wash) restores the frosted quality the
-          rest of the site uses — but its intensity is masked to fade in gradually rather than
-          switching on at a hard line, which is what made an earlier flat-panel version of this
-          look like a visible seam. Blur strength itself ramps in, so there's no boundary to spot. */}
-      <div
-        className="pointer-events-none absolute inset-0 backdrop-blur-md"
-        style={{
-          maskImage: "linear-gradient(to top, black 0%, black 22%, transparent 62%)",
-          WebkitMaskImage: "linear-gradient(to top, black 0%, black 22%, transparent 62%)",
-        }}
-      />
 
       {/* Atmospheric fade: an eased, multi-stop gradient (not a flat panel) so there's no point at
           which a viewer can locate where the effect "starts" — it reads as shadow, not a layer. */}

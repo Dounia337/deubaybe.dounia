@@ -47,7 +47,7 @@ export default async function HomePage() {
           so the homepage never shows a placeholder; empty states only live on the dedicated
           listing pages, reached by intentional navigation. */}
       {projects.length > 0 && (
-        <Section>
+        <Section className="hero-wash">
           <Reveal className="mx-auto mb-10 max-w-xl text-center">
             <Parallax offset={14}>
               <Eyebrow>Projects</Eyebrow>
@@ -79,7 +79,7 @@ export default async function HomePage() {
 
       {/* Cybersecurity preview */}
       {cyberEntries.length > 0 && (
-        <Section>
+        <Section className="hero-wash">
           <Reveal className="mx-auto mb-10 max-w-xl text-center">
             <Parallax offset={14}>
               <Eyebrow>Cyber Lab</Eyebrow>
@@ -111,7 +111,7 @@ export default async function HomePage() {
 
       {/* Experiences preview */}
       {experiences.length > 0 && (
-        <Section>
+        <Section className="hero-wash">
           <Reveal className="mx-auto mb-10 max-w-xl text-center">
             <Parallax offset={14}>
               <Eyebrow>Experiences</Eyebrow>
@@ -144,7 +144,7 @@ export default async function HomePage() {
 
       {/* Reflections preview */}
       {reflections.length > 0 && (
-        <Section>
+        <Section className="hero-wash">
           <Reveal className="mx-auto mb-10 max-w-xl text-center">
             <Parallax offset={14}>
               <Eyebrow>Reflections</Eyebrow>

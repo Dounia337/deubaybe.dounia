@@ -16,7 +16,7 @@ export default async function ReflectionsPage() {
         description="Writing on leadership, tech, and the in-between moments of building things that matter."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Reflections" }]}
       />
-      <Section>
+      <Section className="hero-wash">
         {reflections.length === 0 ? (
           <EmptyState
             icon={<BookOpen />}
