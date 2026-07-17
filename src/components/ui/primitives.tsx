@@ -173,6 +173,19 @@ export function OverlayCard({
         </div>
       )}
 
+      {/* Edge integration: the page's own background color (theme-aware, not a hardcoded tone)
+          shows through at just the outer rim, via a mask rather than lowering the image's own
+          opacity — so the crisp photo stays fully sharp everywhere except the last sliver, where
+          it softly gives way to whatever's actually behind the card instead of ending on a hard
+          rectangle silhouette. No blur, no border, no frame color of its own. */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-bg"
+        style={{
+          maskImage: "radial-gradient(ellipse 94% 94% at 50% 50%, transparent 80%, black 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 94% 94% at 50% 50%, transparent 80%, black 100%)",
+        }}
+      />
+
       {/* Cylindrical-curve illusion — no 3D transform at all, just light: a soft highlight
           bulges from the horizontal center (like a sheen catching a convex surface) while the
           edges sit a touch darker (like they're receding). Both intensify a little on hover. */}
