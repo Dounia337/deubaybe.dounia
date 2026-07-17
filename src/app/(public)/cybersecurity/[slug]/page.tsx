@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/motion";
+import { ImmersiveImage } from "@/components/immersive-image";
 import { CyberRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -31,21 +31,14 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
 
       {entry.image_url && (
         <Reveal delay={0.1}>
-          <div className="relative mt-6 flex h-[320px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-xl shadow-black/[0.1] ring-1 ring-border sm:h-[440px] md:h-[560px]">
-            <Image
-              src={entry.image_url}
-              alt={entry.title}
-              fill
-              sizes="(min-width: 768px) 768px, 100vw"
-              priority
-              className="object-contain"
-            />
+          <div className="mt-6">
+            <ImmersiveImage src={entry.image_url} alt={entry.title} priority />
           </div>
         </Reveal>
       )}
 
       <Reveal delay={0.15}>
-        <p className="mt-8 text-base leading-relaxed text-fg-muted">{entry.description}</p>
+        <p className="mt-8 text-[17px] leading-[1.85] text-fg-muted">{entry.description}</p>
 
         {tools.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-1.5">

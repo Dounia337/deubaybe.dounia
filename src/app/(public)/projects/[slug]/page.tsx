@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { Section, Chip, Breadcrumbs, Button } from "@/components/ui/primitives";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
+import { ImmersiveImage } from "@/components/immersive-image";
 import { ProjectsRepo } from "@/db/repo";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -51,22 +51,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {project.image_url && (
         <Reveal delay={0.1}>
-          <div className="relative mt-8 flex h-[320px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-xl shadow-black/[0.1] ring-1 ring-border sm:h-[440px] md:h-[560px]">
-            <Image
-              src={project.image_url}
-              alt={project.title}
-              fill
-              sizes="(min-width: 768px) 768px, 100vw"
-              priority
-              className="object-contain"
-            />
+          <div className="mt-8">
+            <ImmersiveImage src={project.image_url} alt={project.title} priority />
           </div>
         </Reveal>
       )}
 
       <Reveal delay={0.15}>
         <p className="mt-10 font-display text-xl font-semibold tracking-tight text-fg">Overview</p>
-        <p className="mt-3 text-base leading-relaxed text-fg-muted">{project.description}</p>
+        <p className="mt-3 text-[17px] leading-[1.85] text-fg-muted">{project.description}</p>
       </Reveal>
 
       <RevealGroup className="mt-10 grid gap-8 border-t border-border pt-8 sm:grid-cols-3">

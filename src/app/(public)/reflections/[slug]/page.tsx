@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { Clock } from "lucide-react";
 import { Section, Chip, Breadcrumbs } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/motion";
 import { ReadingProgress } from "@/components/reading-progress";
 import { ShareButtons } from "@/components/share-buttons";
 import { RelatedReflections } from "@/components/related-reflections";
-import { ReflectionsRepo } from "@/db/repo";
+import { ImmersiveImage } from "@/components/immersive-image";
+import { PostFooter } from "@/components/post-footer";
+import { ReflectionsRepo, CVRepo } from "@/db/repo";
 import { formatDate, estimateReadingTime } from "@/lib/format";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -17,9 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ReflectionDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [reflection, allReflections] = await Promise.all([
+  const [reflection, allReflections, profile] = await Promise.all([
     ReflectionsRepo.bySlug(slug),
     ReflectionsRepo.all(true),
+    CVRepo.profile(),
   ]);
   if (!reflection || !reflection.published) notFound();
 
@@ -69,26 +71,26 @@ export default async function ReflectionDetailPage({ params }: { params: Promise
 
         {reflection.image_url && (
           <Reveal delay={0.1}>
-            <div className="relative mt-8 flex h-[320px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-xl shadow-black/[0.1] ring-1 ring-border sm:h-[440px] md:h-[560px]">
-              <Image
-                src={reflection.image_url}
-                alt={reflection.title}
-                fill
-                sizes="(min-width: 768px) 768px, 100vw"
-                priority
-                className="object-contain"
-              />
+            <div className="mt-8">
+              <ImmersiveImage src={reflection.image_url} alt={reflection.title} priority />
             </div>
           </Reveal>
         )}
 
         <Reveal delay={0.15}>
-          <div className="mt-10 space-y-5 text-base leading-relaxed text-fg-muted">
+          <div className="mt-10 space-y-6 text-left text-[17px] leading-[1.85] text-fg-muted sm:text-justify sm:[hyphens:auto] sm:[text-align-last:left]">
             {paragraphs.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
         </Reveal>
+
+        <PostFooter
+          name={profile.full_name}
+          headline={profile.headline}
+          photoUrl={profile.photo_url}
+          date={formatDate(reflection.post_date)}
+        />
 
         <RelatedReflections items={related} />
       </Section>
