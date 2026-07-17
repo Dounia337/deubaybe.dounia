@@ -2,16 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useMotionValue,
-  useSpring,
-  useReducedMotion,
-} from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import type { MouseEvent } from "react";
 import { ChevronRight, ExternalLink, Home as HomeIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa6";
 import { cx } from "@/lib/format";
@@ -153,47 +145,12 @@ export function OverlayCard({
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   const hasActions = Boolean(githubUrl || demoUrl);
-  const prefersReducedMotion = useReducedMotion();
-
-  // Subtle "curved glass" tilt: the card leans very slightly toward the pointer, like light
-  // curvature on a soft sphere rather than a flat plane. Values are intentionally tiny —
-  // this should read as physical presence, not as an obvious 3D gimmick.
-  const pointerX = useMotionValue(0.5);
-  const pointerY = useMotionValue(0.5);
-  const springConfig = { stiffness: 220, damping: 22, mass: 0.6 };
-  const rotateX = useSpring(useTransform(pointerY, [0, 1], [3, -3]), springConfig);
-  const rotateY = useSpring(useTransform(pointerX, [0, 1], [-3, 3]), springConfig);
-  const liftY = useSpring(0, springConfig);
-
-  function handlePointerMove(e: MouseEvent<HTMLDivElement>) {
-    if (prefersReducedMotion) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    pointerX.set((e.clientX - rect.left) / rect.width);
-    pointerY.set((e.clientY - rect.top) / rect.height);
-  }
-  function handlePointerEnter() {
-    if (prefersReducedMotion) return;
-    liftY.set(-4);
-  }
-  function handlePointerLeave() {
-    pointerX.set(0.5);
-    pointerY.set(0.5);
-    liftY.set(0);
-  }
 
   const card = (
-    <motion.div
+    <div
       ref={ref}
-      onMouseMove={handlePointerMove}
-      onMouseEnter={handlePointerEnter}
-      onMouseLeave={handlePointerLeave}
-      style={
-        prefersReducedMotion
-          ? undefined
-          : { rotateX, rotateY, y: liftY, transformPerspective: 800 }
-      }
       className={cx(
-        "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-shadow duration-300 ease-out hover:shadow-2xl hover:shadow-black/20",
+        "group relative flex w-full flex-col justify-end overflow-hidden rounded-2xl shadow-sm shadow-black/[0.05] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20",
         imgHeight,
         className
       )}
@@ -213,6 +170,12 @@ export function OverlayCard({
           <span className="text-accent/50 [&_svg]:h-16 [&_svg]:w-16 sm:[&_svg]:h-20 sm:[&_svg]:w-20">{icon}</span>
         </div>
       )}
+
+      {/* Cylindrical-curve illusion — no 3D transform at all, just light: a soft highlight
+          bulges from the horizontal center (like a sheen catching a convex surface) while the
+          edges sit a touch darker (like they're receding). Both intensify a little on hover. */}
+      <div className="pointer-events-none absolute inset-0 opacity-70 mix-blend-soft-light transition-opacity duration-300 ease-out group-hover:opacity-100 bg-[radial-gradient(ellipse_62%_85%_at_50%_40%,rgba(255,255,255,0.5),rgba(255,255,255,0)_72%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-60 transition-opacity duration-300 ease-out group-hover:opacity-90 bg-[linear-gradient(to_right,rgba(0,0,0,0.20),rgba(0,0,0,0)_18%,rgba(0,0,0,0)_82%,rgba(0,0,0,0.20))]" />
 
       {/* Atmospheric fade: an eased, multi-stop gradient (not a flat panel) so there's no point at
           which a viewer can locate where the effect "starts" — it reads as shadow, not a layer. */}
@@ -273,7 +236,7 @@ export function OverlayCard({
         )}
         {date && <p className="relative mt-2.5 text-xs text-white/70">{date}</p>}
       </div>
-    </motion.div>
+    </div>
   );
 
   if (!href) return card;
