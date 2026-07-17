@@ -26,7 +26,7 @@ export default async function ExperiencesPage() {
             description="New trainings and convenings are being prepared. Stay tuned."
           />
         ) : (
-          <ol className="relative space-y-6 border-l border-border pl-8">
+          <ol className="relative space-y-10 border-l border-border pl-8">
             {experiences.map((e) => (
               <li key={e.id} className="relative">
                 <span className="absolute -left-[38px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-bg bg-accent-tertiary" />

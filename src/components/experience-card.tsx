@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { Chip } from "@/components/ui/primitives";
+import { ImmersiveImage } from "@/components/immersive-image";
 import { cx } from "@/lib/format";
 
 export function ExperienceCard({
@@ -30,34 +30,35 @@ export function ExperienceCard({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full cursor-pointer flex-col gap-5 p-6 text-left transition-colors duration-300 hover:bg-bg-sunken/40 sm:flex-row sm:items-center"
+        className="flex w-full cursor-pointer flex-col text-left"
       >
-        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-bg-sunken sm:h-28 sm:w-28">
-          {imageUrl ? (
-            <Image src={imageUrl} alt={title} fill sizes="112px" className="object-cover object-top" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-tertiary/15 via-transparent to-accent/15">
-              <Sparkles className="h-7 w-7 text-accent-tertiary" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-display text-xl font-medium text-fg">{title}</h3>
-            <span className="text-xs text-fg-subtle">{date}</span>
+        {imageUrl ? (
+          <ImmersiveImage src={imageUrl} alt={title} heightClass="h-56 sm:h-64 md:h-72" />
+        ) : (
+          <div className="flex h-56 w-full items-center justify-center bg-gradient-to-br from-accent-tertiary/15 via-transparent to-accent/15 sm:h-64 md:h-72">
+            <Sparkles className="h-10 w-10 text-accent-tertiary" />
           </div>
-          <Chip>{type}</Chip>
-          <p className={cx("mt-3 text-base leading-relaxed text-fg-muted", !open && "line-clamp-2")}>
-            {description}
-          </p>
+        )}
+
+        <div className="flex flex-col gap-5 p-6 transition-colors duration-300 hover:bg-bg-sunken/40 sm:flex-row sm:items-center">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="font-display text-xl font-medium text-fg">{title}</h3>
+              <span className="text-xs text-fg-subtle">{date}</span>
+            </div>
+            <Chip>{type}</Chip>
+            <p className={cx("mt-3 text-base leading-relaxed text-fg-muted", !open && "line-clamp-2")}>
+              {description}
+            </p>
+          </div>
+          <motion.span
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden shrink-0 self-start text-fg-subtle sm:block"
+          >
+            <ChevronDown className="h-5 w-5" />
+          </motion.span>
         </div>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="hidden shrink-0 self-start text-fg-subtle sm:block"
-        >
-          <ChevronDown className="h-5 w-5" />
-        </motion.span>
       </button>
 
       <AnimatePresence initial={false}>
