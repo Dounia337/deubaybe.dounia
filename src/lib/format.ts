@@ -16,6 +16,12 @@ export function truncate(text: string, max = 160): string {
   return text.slice(0, max).trimEnd() + "…";
 }
 
+/** Rough estimate at 200 words/minute, the standard used by most reading-time widgets. */
+export function estimateReadingTime(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export function cx(...args: Array<string | false | null | undefined>): string {
   return args.filter(Boolean).join(" ");
 }

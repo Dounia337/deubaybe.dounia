@@ -18,7 +18,11 @@ export default async function CyberLabPage() {
       />
       <Section>
         {entries.length === 0 ? (
-          <EmptyState title="No lab entries published yet" />
+          <EmptyState
+            icon={<ShieldCheck />}
+            title="Coming soon"
+            description="New lab writeups are being prepared. Stay tuned."
+          />
         ) : (
           <RevealGroup className="grid gap-5 sm:grid-cols-2">
             {entries.map((c) => (

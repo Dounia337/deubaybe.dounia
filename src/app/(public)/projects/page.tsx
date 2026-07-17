@@ -1,3 +1,4 @@
+import { FolderGit2 } from "lucide-react";
 import { PageHeader, Section, EmptyState } from "@/components/ui/primitives";
 import { ProjectsExplorer } from "@/components/projects-explorer";
 import { ProjectsRepo } from "@/db/repo";
@@ -17,7 +18,11 @@ export default async function ProjectsPage() {
       />
       <Section>
         {projects.length === 0 ? (
-          <EmptyState title="No projects published yet" description="Check back soon." />
+          <EmptyState
+            icon={<FolderGit2 />}
+            title="Coming soon"
+            description="New projects are being prepared. Stay tuned."
+          />
         ) : (
           <ProjectsExplorer projects={projects} />
         )}

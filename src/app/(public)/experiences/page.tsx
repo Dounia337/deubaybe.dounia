@@ -1,3 +1,4 @@
+import { Sparkles } from "lucide-react";
 import { PageHeader, Section, EmptyState } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/motion";
 import { ExperienceCard } from "@/components/experience-card";
@@ -19,7 +20,11 @@ export default async function ExperiencesPage() {
       />
       <Section>
         {experiences.length === 0 ? (
-          <EmptyState title="No experiences logged yet" />
+          <EmptyState
+            icon={<Sparkles />}
+            title="Coming soon"
+            description="New trainings and convenings are being prepared. Stay tuned."
+          />
         ) : (
           <ol className="relative space-y-6 border-l border-border pl-8">
             {experiences.map((e) => (

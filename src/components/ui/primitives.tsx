@@ -342,11 +342,24 @@ export function Button({
   );
 }
 
-export function EmptyState({ title, description }: { title: string; description?: string }) {
+export function EmptyState({
+  title,
+  description,
+  icon,
+}: {
+  title: string;
+  description?: string;
+  icon?: ReactNode;
+}) {
   return (
-    <div className="rounded-2xl border border-dashed border-border-strong px-6 py-14 text-center">
+    <div className="glass mx-auto flex max-w-md flex-col items-center rounded-2xl px-6 py-16 text-center">
+      {icon && (
+        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent [&_svg]:h-5 [&_svg]:w-5">
+          {icon}
+        </span>
+      )}
       <p className="font-display text-lg text-fg">{title}</p>
-      {description && <p className="mt-2 text-sm text-fg-muted">{description}</p>}
+      {description && <p className="mt-2 text-sm leading-relaxed text-fg-muted">{description}</p>}
     </div>
   );
 }

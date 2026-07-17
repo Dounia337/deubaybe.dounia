@@ -27,20 +27,25 @@ export default async function CyberEntryPage({ params }: { params: Promise<{ slu
       <Reveal>
         <Chip>{entry.category}</Chip>
         <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{entry.title}</h1>
+      </Reveal>
 
-        {entry.image_url && (
-          <div className="relative mt-6 flex h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-lg shadow-black/[0.08] sm:h-[380px] md:h-[460px]">
+      {entry.image_url && (
+        <Reveal delay={0.1}>
+          <div className="relative mt-6 flex h-[320px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-xl shadow-black/[0.1] ring-1 ring-border sm:h-[440px] md:h-[560px]">
             <Image
               src={entry.image_url}
               alt={entry.title}
               fill
-              sizes="(min-width: 768px) 720px, 100vw"
+              sizes="(min-width: 768px) 768px, 100vw"
+              priority
               className="object-contain"
             />
           </div>
-        )}
+        </Reveal>
+      )}
 
-        <p className="mt-6 text-base leading-relaxed text-fg-muted">{entry.description}</p>
+      <Reveal delay={0.15}>
+        <p className="mt-8 text-base leading-relaxed text-fg-muted">{entry.description}</p>
 
         {tools.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-1.5">

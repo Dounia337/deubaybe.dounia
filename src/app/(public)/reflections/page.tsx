@@ -1,3 +1,4 @@
+import { BookOpen } from "lucide-react";
 import { PageHeader, Section, EmptyState } from "@/components/ui/primitives";
 import { ReflectionsExplorer } from "@/components/reflections-explorer";
 import { ReflectionsRepo } from "@/db/repo";
@@ -17,7 +18,11 @@ export default async function ReflectionsPage() {
       />
       <Section>
         {reflections.length === 0 ? (
-          <EmptyState title="No reflections published yet" />
+          <EmptyState
+            icon={<BookOpen />}
+            title="Coming soon"
+            description="New stories and reflections are being prepared. Stay tuned."
+          />
         ) : (
           <ReflectionsExplorer reflections={reflections} />
         )}

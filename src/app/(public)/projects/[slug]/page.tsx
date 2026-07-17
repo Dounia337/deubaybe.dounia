@@ -47,20 +47,26 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </Button>
           )}
         </div>
+      </Reveal>
 
-        {project.image_url && (
-          <div className="relative mt-8 flex h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-lg shadow-black/[0.08] sm:h-[380px] md:h-[460px]">
+      {project.image_url && (
+        <Reveal delay={0.1}>
+          <div className="relative mt-8 flex h-[320px] w-full items-center justify-center overflow-hidden rounded-2xl bg-bg-sunken shadow-xl shadow-black/[0.1] ring-1 ring-border sm:h-[440px] md:h-[560px]">
             <Image
               src={project.image_url}
               alt={project.title}
               fill
-              sizes="(min-width: 768px) 720px, 100vw"
+              sizes="(min-width: 768px) 768px, 100vw"
+              priority
               className="object-contain"
             />
           </div>
-        )}
+        </Reveal>
+      )}
 
-        <p className="mt-8 text-base leading-relaxed text-fg-muted">{project.description}</p>
+      <Reveal delay={0.15}>
+        <p className="mt-10 font-display text-xl font-semibold tracking-tight text-fg">Overview</p>
+        <p className="mt-3 text-base leading-relaxed text-fg-muted">{project.description}</p>
       </Reveal>
 
       <RevealGroup className="mt-10 grid gap-8 border-t border-border pt-8 sm:grid-cols-3">
