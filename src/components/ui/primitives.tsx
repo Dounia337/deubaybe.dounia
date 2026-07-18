@@ -129,6 +129,7 @@ export function OverlayCard({
   demoUrl,
   imgHeight = "h-64 sm:h-72 md:h-80",
   className,
+  linkScroll = true,
 }: {
   href?: string;
   src?: string | null;
@@ -142,6 +143,9 @@ export function OverlayCard({
   demoUrl?: string | null;
   imgHeight?: string;
   className?: string;
+  /** Set false for hash-target links (e.g. "/experiences#experience-5") so Next's own instant,
+   * unoffset scrollIntoView doesn't fire and race with a page's own smooth, header-aware scroll. */
+  linkScroll?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -253,7 +257,9 @@ export function OverlayCard({
         {/* When action icons are present, the card's own link can't wrap the whole element
             (that would nest <a> inside <a>) — it becomes a stretched overlay link instead,
             a sibling of the action icons rather than their ancestor. */}
-        {href && hasActions && <Link href={href} aria-label={title} className="absolute inset-0" />}
+        {href && hasActions && (
+          <Link href={href} scroll={linkScroll} aria-label={title} className="absolute inset-0" />
+        )}
         {category && (
           <span className="glass relative mb-2.5 inline-flex items-center rounded-full border-white/20 bg-white/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-white">
             {category}
@@ -280,7 +286,7 @@ export function OverlayCard({
   if (!href) return card;
   if (hasActions) return card; // link lives inside as a stretched overlay (see above)
   return (
-    <Link href={href} className="block h-full">
+    <Link href={href} scroll={linkScroll} className="block h-full">
       {card}
     </Link>
   );

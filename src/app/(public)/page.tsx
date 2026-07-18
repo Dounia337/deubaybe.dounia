@@ -66,7 +66,8 @@ export default async function HomePage() {
             {experiences.map((e) => (
               <RevealItem key={e.id}>
                 <OverlayCard
-                  href="/experiences"
+                  href={`/experiences#experience-${e.id}`}
+                  linkScroll={false}
                   src={e.image_url}
                   alt={e.title}
                   icon={<Sparkles />}

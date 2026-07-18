@@ -200,3 +200,14 @@ body {
   background: var(--border-strong);
   border-radius: 3px;
 }
+
+/* Brief confirmation glow after a hash-linked scroll lands on its target — "this is what you
+   clicked" — then fades away on its own. Applied/removed via a class toggle in ScrollToHash. */
+.target-highlight {
+  animation: target-highlight-pulse 1.8s ease-out;
+  border-radius: 1rem;
+}
+@keyframes target-highlight-pulse {
+  0% { box-shadow: 0 0 0 3px var(--accent-glow); background-color: color-mix(in srgb, var(--accent) 8%, transparent); }
+  100% { box-shadow: 0 0 0 3px transparent; background-color: transparent; }
+}
