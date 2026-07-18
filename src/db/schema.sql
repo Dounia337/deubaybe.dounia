@@ -162,3 +162,13 @@ CREATE TABLE IF NOT EXISTS social_links (
 ALTER TABLE social_links DROP CONSTRAINT IF EXISTS social_links_platform_check;
 ALTER TABLE social_links ADD CONSTRAINT social_links_platform_check
   CHECK (platform IN ('github', 'linkedin', 'instagram', 'facebook', 'youtube'));
+
+-- Closing quote shown near the end of the homepage (single row). Empty quote text means the
+-- homepage section is hidden entirely rather than showing a placeholder.
+CREATE TABLE IF NOT EXISTS site_quote (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  quote TEXT NOT NULL DEFAULT '',
+  author TEXT NOT NULL DEFAULT '',
+  show_label INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT now()::text
+);

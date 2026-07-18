@@ -11,21 +11,32 @@ import {
   SocialLinksRepo,
   FeaturedRepo,
   HeroRolesRepo,
+  QuoteRepo,
 } from "@/db/repo";
 import { formatDate } from "@/lib/format";
 
 export default async function HomePage() {
-  const [profile, allProjects, allCyberEntries, allExperiences, allReflections, allSocialLinks, featured, heroRoles] =
-    await Promise.all([
-      CVRepo.profile(),
-      ProjectsRepo.all(true),
-      CyberRepo.all(true),
-      ExperiencesRepo.all(true),
-      ReflectionsRepo.all(true),
-      SocialLinksRepo.all(),
-      FeaturedRepo.all(),
-      HeroRolesRepo.all(),
-    ]);
+  const [
+    profile,
+    allProjects,
+    allCyberEntries,
+    allExperiences,
+    allReflections,
+    allSocialLinks,
+    featured,
+    heroRoles,
+    quote,
+  ] = await Promise.all([
+    CVRepo.profile(),
+    ProjectsRepo.all(true),
+    CyberRepo.all(true),
+    ExperiencesRepo.all(true),
+    ReflectionsRepo.all(true),
+    SocialLinksRepo.all(),
+    FeaturedRepo.all(),
+    HeroRolesRepo.all(),
+    QuoteRepo.get(),
+  ]);
   const socialLinks = allSocialLinks.filter((l) => l.visible && l.url.trim());
   const projects = allProjects.slice(0, 3);
   const cyberEntries = allCyberEntries.slice(0, 2);
@@ -178,6 +189,26 @@ export default async function HomePage() {
               );
             })}
           </RevealGroup>
+        </Section>
+      )}
+
+      {/* Closing quote — a quiet last note before the footer, not another content grid. Hidden
+          entirely (no placeholder) when the admin hasn't set one. Reuses hero-wash for the same
+          soft, borderless atmosphere as every other section, and extra vertical padding so it
+          reads as a deliberate pause rather than just one more block in the scroll. */}
+      {quote.quote.trim() && (
+        <Section className="hero-wash">
+          <Reveal className="mx-auto max-w-2xl py-10 text-center sm:py-14">
+            {quote.show_label ? (
+              <p className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-fg-subtle/70">
+                Quote of the Week
+              </p>
+            ) : null}
+            <p className="font-display text-2xl italic font-normal leading-relaxed text-fg sm:text-3xl md:text-[2.25rem] md:leading-[1.5]">
+              &ldquo;{quote.quote}&rdquo;
+            </p>
+            {quote.author.trim() && <p className="mt-6 text-sm text-fg-subtle">— {quote.author}</p>}
+          </Reveal>
         </Section>
       )}
     </>

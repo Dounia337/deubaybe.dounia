@@ -649,6 +649,45 @@ export const FeaturedRepo = {
   },
 };
 
+// ---------- Closing quote (homepage, single row) ----------
+
+export type SiteQuote = {
+  id: number;
+  quote: string;
+  author: string;
+  show_label: number;
+  updated_at: string;
+};
+
+export const QuoteRepo = {
+  async get(): Promise<SiteQuote> {
+    // Upsert-safe singleton bootstrap: only the first concurrent caller actually inserts.
+    const inserted = await sql<SiteQuote[]>`
+      INSERT INTO site_quote (id, quote, author, show_label)
+      VALUES (1, '', '', 0)
+      ON CONFLICT (id) DO NOTHING
+      RETURNING *
+    `;
+    if (inserted[0]) return inserted[0];
+
+    const existing = await sql<SiteQuote[]>`SELECT * FROM site_quote WHERE id = 1`;
+    return existing[0];
+  },
+  async update(data: Partial<Pick<SiteQuote, "quote" | "author" | "show_label">>): Promise<SiteQuote> {
+    const existing = await this.get();
+    const rows = await sql<SiteQuote[]>`
+      UPDATE site_quote SET
+        quote = ${data.quote ?? existing.quote},
+        author = ${data.author ?? existing.author},
+        show_label = ${data.show_label ?? existing.show_label},
+        updated_at = now()::text
+      WHERE id = 1
+      RETURNING *
+    `;
+    return rows[0];
+  },
+};
+
 // ---------- Admin users ----------
 
 export type AdminUser = {

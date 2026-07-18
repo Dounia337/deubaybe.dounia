@@ -71,6 +71,7 @@ export function CVEditor() {
       <ProfileSection profile={profile} setProfile={setProfile} />
       <HeroRolesSection />
       <SocialLinksSection />
+      <QuoteSection />
       <EducationSection items={education} reload={load} />
       <ExperienceSection items={experience} reload={load} />
       <LeadershipSection items={leadership} reload={load} />
@@ -290,6 +291,86 @@ function SocialLinksSection() {
           </div>
           <Button onClick={save} disabled={saving} className="mt-4">
             <Save className="h-4 w-4" /> {saving ? "Saving…" : saved ? "Saved" : "Save social links"}
+          </Button>
+        </>
+      )}
+    </section>
+  );
+}
+
+type QuoteForm = { quote: string; author: string; showLabel: boolean };
+
+function QuoteSection() {
+  const [form, setForm] = useState<QuoteForm | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/quote")
+      .then((r) => r.json())
+      .then((json) =>
+        setForm({
+          quote: json.quote.quote,
+          author: json.quote.author,
+          showLabel: !!json.quote.show_label,
+        })
+      );
+  }, []);
+
+  function set<K extends keyof QuoteForm>(key: K, val: QuoteForm[K]) {
+    setForm((prev) => (prev ? { ...prev, [key]: val } : prev));
+  }
+
+  async function save() {
+    if (!form) return;
+    setSaving(true);
+    await fetch("/api/quote", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quote: form.quote, author: form.author, showLabel: form.showLabel }),
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <section>
+      <h2 className="font-display text-lg font-semibold text-fg">Closing quote</h2>
+      <p className="mt-1 text-sm text-fg-muted">
+        Shown near the end of the homepage, after Writings and before the footer. Leave the quote
+        empty to hide that section entirely — no placeholder is ever shown.
+      </p>
+      {!form ? (
+        <div className="mt-4 flex items-center gap-2 text-sm text-fg-muted">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+        </div>
+      ) : (
+        <>
+          <div className="mt-4 space-y-4">
+            <Field label="Quote">
+              <TextArea
+                rows={3}
+                placeholder="e.g. Build things that matter."
+                value={form.quote}
+                onChange={(e) => set("quote", e.target.value)}
+              />
+            </Field>
+            <Field label="Author">
+              <TextInput
+                placeholder="e.g. Deubaybe Dounia"
+                value={form.author}
+                onChange={(e) => set("author", e.target.value)}
+              />
+            </Field>
+            <Toggle
+              checked={form.showLabel}
+              onChange={(v) => set("showLabel", v)}
+              label='Show "Quote of the Week" label'
+            />
+          </div>
+          <Button onClick={save} disabled={saving} className="mt-4">
+            <Save className="h-4 w-4" /> {saving ? "Saving…" : saved ? "Saved" : "Save quote"}
           </Button>
         </>
       )}
