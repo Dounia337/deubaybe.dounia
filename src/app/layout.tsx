@@ -18,10 +18,27 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
+const SITE_URL = "https://portfolio-sigma-ebon-26.vercel.app";
+const SITE_TITLE = "Deubaybe Dounia | Builder & Leader";
+const SITE_DESCRIPTION =
+  "Personal site of a builder who moves between engineering and leadership — projects, blue team lab notes, experiences, and reflections.";
+
 export const metadata: Metadata = {
-  title: "Deubaybe Dounia | Builder & Leader",
-  description:
-    "Personal site of a builder who moves between engineering and leadership — projects, blue team lab notes, experiences, and reflections.",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_TITLE,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
